@@ -1,0 +1,581 @@
+\documentclass{article}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx, caption}
+\usepackage{mathrsfs}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\renewcommand{\figurename}{Figura}
+\usepackage{ dsfont }
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{bm}
+\usepackage{titlecaps}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{float} 
+\usetikzlibrary{calc}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{verbatim} 
+\usepackage{titlecaps}% http://ctan.org/pkg/titlecaps
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{ITBA}
+\fancyhead[L]{Lógica Computacional}
+\fancyfoot[C]{\thepage}
+
+
+\newcommand{\tikzscale}{0.8}
+ \theoremstyle{definition}
+\newtheorem{ejercicio}{Ejercicio}
+\newtheorem*{solucion}{Solución}
+
+\newtheorem*{teorema}{Teorema}
+\captionsetup{width=5.5in, font=small}
+
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\G}{\Gamma}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\bra}{\textcolor{blue}{\longrightarrow}}
+\newcommand{\bla}{\textcolor{blue}{\longleftarrow}}
+\newcommand{\rra}{\textcolor{red}{\longrightarrow}}
+\newcommand{\rla}{\textcolor{red}{\longleftarrow}}
+\newcommand{\Ra}{\Rightarrow}
+\renewcommand{\S}{\Sigma}
+\newcommand{\bz}{\bm{0}}
+\newcommand{\bo}{\bm{1}}
+
+\renewcommand{\a}{\alpha}
+\renewcommand{\b}{\beta}
+\newcommand{\g}{\gamma}
+\newcommand{\s}{\bm{s}}
+\newcommand{\p}{\bm{p}}
+
+\renewcommand{\L}{\mathcal{L}}
+\newcommand{\I}{\mathcal{I}}
+\newcommand{\genericfol}{\L = (\mathcal{F})}
+\newcommand{\U}{\mathcal{U}}
+
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+
+\title{Expresando las funciones recursivas primitivas en un lenguaje de primer orden para la aritmética}
+\author{Marcelo Lynch\footnote{\texttt{mlynch@itba.edu.ar} - son bienvenidas consultas, comentarios y correcciones}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introducción}
+La idea de este documento es definir un lenguaje y una interpretación adecuada para expresar propiedades aritméticas, es decir, propiedades de los números naturales con la suma y el producto. Trabajaremos con la interpretación $(\N, +, \cdot, 0 ,1)$, y nos interesa ver allí qué tipo de funciones y relaciones son expresables, y en particular veremos que podemos expresar cualquier función recursiva primitiva en esa interpretación. \textbf{Este resultado es central en la demostración de los teoremas de incompletitud de Gödel}, que fueron posiblemente el acontecimiento más importante en lógica en el siglo XX. \\
+
+El documento está estructurado como sigue: primero se define qué significa expresar una relación o una función en un lenguaje de primer orden, y se dan ejemplos. Luego se define el lenguaje e intepretación que vamos a usar. Después se demuestra que las funciones iniciales y las operaciones constructivas de funciones recursivas primitivas (composición y recursión primitiva) son expresables en el lenguaje. Esto demuestra que todas las funciones RP son expresables. Finalmente, en un apéndice se exhibe la demostración de que existe una sorprendente codificación expresable en nuestro lenguaje, (y fue utiizada en las demostraciones previas asumiendo su existencia). 
+
+\section*{Expresando relaciones y funciones}
+Si $\L$ es un lenguaje de primer orden y $\I$ una interpretación de $\L$ con universo $\U$ sabemos que expresar un conjunto $A \subset \U$ es dar una fórmula con una sola variable libre $\a(x)$ tal que \[ V_{\I, v_{x=a}} [ \a(x) ] = 1 \iff a \in A \].
+
+Podemos extender naturalmente este concepto para expresar \textbf{relaciones} en $\U$, utilizando más variables libres:\\
+
+\textbf{Definición}. Sea $A \subset \U^n$ una relacion $n$-aria, decimos que una fórmula con exactamente $n$ variables libres $\a(x_1, \cdots x_n)$ expresa la relación $A$ si se cumple:
+\[ V_{\I, v_{\substack{x_1=a_1 \\ x_2 = a_2 \\ \cdots \\ x_n = a_n}}} [ \a(x_1, \cdots, x_n) ] = 1 \iff (a_1, a_2, \cdots, a_n) \in A \]
+
+Observemos que el caso de expresar un subconjunto de $\U$ se vuelve el caso particular $n = 1$.\\
+
+Recordando que una función $n$-aria $f: \U^n \ra \U$ es en definitiva una relación incluida en $\U^{n+1}$, vemos que podemos decir que $\a(x_1, \cdots, x_n, y)$, con $n+1$ variables libres, \textbf{expresa la función $f$} si \[ V_{\I, v_{\substack{x_1=a_1 \\ x_2 = a_2 \\ \cdots \\ x_n = a_n \\ y = y_0}}} [ \a(x_1, \cdots, x_n, y) ] = 1 \iff y_0 = f(a_1, a_2, \cdots, a_n) \]
+
+
+
+En lo que sigue vamos a abusar la notación para mayor claridad de escritura, omitiendo $\I$ y $v$ del subíndice y usando los mismos símbolos para las variables de la fórmula y los elementos del universo que se asocian a esa variable por la valuación (como si las igualdades en la valuación modificada fueran ``$\underbrace{x_i}_{\text{variable}} = \underbrace{x_i}_{\in \N}$'' en vez de ``$x_i = a_i$'') : así, la condición anterior se escribiría:
+
+\[ V [ \a(x_1, \cdots, x_n, y) ] = 1 \iff y = f(x_1, x_2 \cdots, x_n) \]
+
+Así, será claro por el contexto cuando los símbolos en el papel se refieren a una variable (cuando son usados en una fórmula) o al elemento del dominio asociado a la variable por la valuación (cuando son usados fuera de las fórmulas).
+
+%\textbf{Observación}: Si el lenguaje $\L$ posee un símbolo de función $n$-aria $f$ entonces la interpretación en $\I$ de la función $f$, que llamamos $f_\I$, es expresable simplemente mediante la fórmula:
+
+%\[ y = f(x_1, x_2, \cdots, x_n) \]
+
+%donde $y, x_1, \cdots, x_n$ son las $n+1$ variables libres de la fórmula.
+
+\subsection*{Un ejemplo}
+Sea $\L$ con con igualdad y un símbolo de función binario $\bm{f}$ y la interpretación $\I = (\N, +)$. Consideremos la relación binaria $\le$, el orden usual entre los números naturales. Para expresarla necesitamos una fórmula $\a(x,y)$ tal que \[V[\a (x,y)] = 1 \iff x \le y\]
+
+La fórmula\footnote{Vamos a usar $:=$ cuando definamos fórmulas o términos de $\L$, para diferenciarlo en ese contexto del símbolo $=$ del lenguaje. Recordemos que siempre que definimos términos o fórmulas estamos definiendo ``cadenas de texto'', es decir toda referencia a otras fórmulas o términos previamente definidos debe tomarse como una ``macroexpansión''.} $\a(x,y) := \exists z \bm{f}(x,z) = y$ lo cumple:
+\begin{align*}
+& V[\a (x,y)] = 1 \\
+& \iff \exists z \in \N \text{ tal que } x + z = y \\
+& \iff x \le y
+\end{align*}
+
+Consideremos ahora la función $g: \N^2 \ra \N$ con $g(n, m) = 2n + m$. Para expresarla necesitamos una fórmula con tres  variables libres $\a(x_1,x_2, y)$  tal que \[V[\a (x_1,x_2,y)] = 1 \iff y  = g(x_1,x_2)\] \\
+
+
+La fórmula $\g(x_1, x_2, y) := \bm{f}(\bm{f}(x_1,x_1),x_2) = y$ lo cumple:
+\begin{align*}
+& V[\g (x_1,x_2,y)] = 1  \\
+& \iff (x_1 + x_1) + x_2 = y \\
+& \iff 2x_1 + x_2 = x \\
+& \iff g(x_1, x_2) = y
+\end{align*}
+
+Una observación importante: si quisieramos ahora escribir un enunciado que exprese ``para todo $x,y$ se cumple $x \le g(x,y)''$, la manera de usar ``lo que vale la función'' en el predicado es utilizando una variable auxiliar $z$ que se ``transforme'' en $g(x,y)$: 
+\[ \forall x \forall y \forall z\ ( \g(x,y,z) \ra \a_{\le}(x,z))) \]
+
+Esto dice ``si $z = g(x,y)$ entonces $x \le z$'', que es otra manera de decir lo que queríamos. Tenemos que hacerlo así porque la unica forma de ``usar la funcion $g$'' es con la fórmula $\g(x,y,z)$, que lo que dice es ``$g(x,y)$ es igual a $z$'': no podemos simplemente obtener un término que denote el valor ``suelto'' $f(x,y)$.
+
+\section*{Un lenguaje para la aritmética}
+Como queremos un lenguaje para hablar de los números naturales con la suma y el producto, en lo que sigue vamos a trabajar con un lenguaje $\L$ con igualdad, dos símbolos de función binaria $\s$ y $\p$, y dos constantes $\bz$ y $\bo$. La interpretación será $\I = (\N, +, \cdot, 0, 1)$ es decir tiene universo $\N$, $\s$ se interpreta como la suma, $\p$ se interpreta como el producto y las constantes $\bz$ y $\bo$ se interpretan como los números $0$ y $1$.\\
+
+\textit{Observación}: los números $0$ y $1$ son distinguibles solo usando $\s$ y $\p$: la fórmula $\forall y\ \s(x,y) = y$ distingue al $0$ y $\forall y\ \p(x,y) = y$ distingue al 1. En este sentido, las constantes son redundantes y podríamos no tenerlas, pero las agregamos para que las fórmulas sean más sucintas, y para lograr términos que se interpreten como cualquier número natural (ver la sección que sigue).
+
+
+\subsection*{Distinguiendo a cada número natural}
+
+Para entrar en calor, veamos como podemos distinguir a cualquier número natural en esta interpretación. Consideremos esta serie de \textbf{términos de $\L$}:
+
+\[ t_0 := \bz \]
+\[ t_1 := \bo \]
+\[ t_n := \s(t_{n-1}, \bo) \text{ si $n \ge 1$} \]
+
+\newcommand{\ov}{\overline{v}}
+
+Si $\ov : Term_\L \ra \N$ es una valuación (extendida) cualquiera para este lenguaje e interpretación, veamos que $\overline{v}(t_n) = n$ para todo $n \in \N$, por inducción en $n$.\\
+
+\underline{Caso base: $n = 0$ o $n = 1$}. En este caso $t_n$ coincide con las constantes del lenguaje, entonces es directo: si $n = 0$, $\ov(t_n) = \ov(\bz) = 0$, si $n = 1$ entonces  $\ov(t_n) = \ov(\bo) = 1$.\\
+
+\underline{Hipótesis inductiva}: $\ov(t_n) = n$\\
+
+\underline{Tesis: $\ov(t_{n+1}) = n + 1$}. Pero tenemos:
+
+\[ \ov(t_{n+1}) = \ov(\s(t_n, 1) = \underbrace{\ov(t_n)}_{= n \text{ por HI}} + \ov(\bo) = n + 1 \]
+
+\qed
+\\
+
+Teniendo esto en cuenta, en lo que sigue vamos a escribir $\bm{n}$, el número en negrita, para denotar el término $t_n$ (en los casos $n = 0,1$ estamos escribiendo el símbolo de constante del lenguaje, en los otros lo podemos pensar como una ``macro'' para el término).\\
+
+Con esto vemos que podemos distinguir  a cualquier número natural $n$ con la fórmula \[ \a_n(x) := x = \bm{n} \]
+
+En efecto:
+
+\begin{align*}
+& V[ x = \bm{n} ] = 1  \\
+& \iff x = \overline{v}(\bm{n}) \\
+& \iff x = n  
+\end{align*}
+
+
+\section*{Expresando las funciones recursivas primitivas}
+Nos disponemos a demostrar que toda función recursiva primitiva es expresable en esta interpretación. Para eso vamos a mostrar que:
+
+\begin{enumerate}
+\item las funciones iniciales son expresables,
+\item si dos funciones son expresables, también lo es su composición, y
+\item si dos funciones son expresables también lo es la obtenida por recursión primitiva a partir de ellas
+\end{enumerate}
+
+Como es esperable, el paso (3) va a ser el que nos cueste más trabajo.\\
+
+\subsection*{Dos relaciones útiles}
+Expresemos dos relaciones que nos van a resultar útiles en lo que sigue. A cada relación $\mathcal{R}$ le haremos corresponder una fórmula $\a_{\mathcal{R}}$ que la expresa. Las demostraciones quedan como ejercicio para el lector o lectora: \\
+
+\textbf{La relación de orden $\le$} es expresada por $\a_{\le}(x,y) := \exists z (x + z = y)$\\
+
+\textbf{La relación de orden estricto $<$} es expresada por  $\a_{<}(x,y) := (\a_{<}(x,y) \land \neg (x = y))$\\
+
+% \textbf{La relación de divisibilidad $|$}: $a_{|}(x,y) := \exists z\ \p(z,x) = y $
+%\\
+
+%Con la relación de divisibilidad expresada podemos expresar al conjunto $\mathcal{P}$ de los números primos (``$x$ es primo si solo $1$ y $x$ dividen a $x$''), con la fórmula:
+
+%\[ primo(x) := \forall y\ ( \a_{|}(y,x) \ra (y = \bo \vee y = x)) \]
+
+
+
+\subsection*{Las funciones iniciales son expresables}
+
+\subsubsection*{Cero}
+La función $cero : \N \ra \N$ tal que $cero(x) = 0$ es expresable mediante la fórmula
+
+\[ \a_{cero} (x,y) := (y = \bz \land x = x) \]
+
+Demostración:
+\begin{align*}
+& V[\a_{cero} (x,y)] = 1 \\
+& \iff y = 0 \land x = x  \\
+& \iff y = 0 \\
+& \iff y = cero(x)
+\end{align*}
+
+
+La parte ``$x = x$'' aparece únicamente para que la variable $x$ aparezca libre en la fórmula (definimos que para que la fórmula exprese a la función $n$-aria debe tener $n+1$ variables libres).\\
+
+
+\subsubsection*{Proyecciones}
+Cualquier función proyección $\pi^n_k : \N^n \ra \N$ / $\pi^n_k (a_1 \cdots a_n) = a_k$ es expresable mediante la fórmula:
+
+\[  \a_{\pi^n_{k}} (x_1, \cdots x_n, y) := (y = x_k \land \bigwedge_{1 \le i \le n} x_i = x_i) \]
+\newpage
+porque: 
+\begin{align*}
+& V[ \a_{\pi^n_{k}} (x_1, \cdots, x_n, y)] = 1 \\
+& \iff y = x_k \text{ y } (x_1 = x_1 \text{ y } \cdots \text{ y } x_n = x_n)  \\
+& \iff y = x_k \\
+& \iff y = \pi^n_{k}(x_1, \cdots, x_n)
+\end{align*}
+
+Donde de nuevo la serie de igualdades ``$x_i = x_i$'' está solamente para asegurar que figuren como variables libres.
+
+\subsubsection*{Sucesor}
+
+
+Y la función $suc : \N \ra \N$ tal que $suc(x) = x + 1$ es expresable mediante
+
+\[ \a_{suc} (x,y) := y = \s(x, \bo) \]
+
+porque
+
+\begin{align*}
+& V[\a_{suc} (x,y)] = 1 \\
+& \iff y = x + 1  \\
+& \iff y = suc(x)
+\end{align*}
+
+
+\subsection*{Las composición es expresable}
+
+\subsubsection*{Composición ``simple''}
+Supongamos que $f : \N \ra \N$ y $g : \N \ra \N$ son expresables mediante las fórmulas $\a_f(x,y)$ y $\a_g(x,y)$ respectivamente. Entonces $f \circ g$ es expresable mediante
+
+\[ \a_{f \circ g}(x,y) := \exists z (\a_g(x,z) \land \a_f(z,y)) \] 
+
+
+\textit{Demostración}: la idea intuitiva es que usamos la variable $z$ para ``guardar'' el resultado de aplicar $g$ y despues ``evaluarla'' en $f$. Más formalmente tenemos:
+
+
+\begin{align*}
+& V[ \a_{f \circ g} (x, y)] = 1 \\
+& \iff \exists z \in \N \text{ tal que } V[ \a_g (x, z)] = 1\text{ y  }V[ \a_{f} (z, y)] = 1 \\
+& \iff \exists z \in \N \text{ tal que } z = g(x) \text{ y } y = f(z) \\
+& \iff y = f(g(x)) \\
+& \iff y = (f \circ g)(x)
+\end{align*}
+
+
+\subsubsection*{Composición ``general''}
+Supongamos que $f : \N^m \ra \N$ es una función expresable y $\a_f(x_1, \cdots, x_m, y)$ una fórmula que la expresa, y para todo $1 \le i \le m$ sean $g_i : \N^k \ra \N$ funciones expresables mediante fórmulas $\a_{g_i}(x_1, \cdots, x_k, y)$ \\
+
+Entonces la composición $h : \N^k \ra \N$ con $h = f \circ (g_1 \times \cdots \times g_m)$ es expresable mediante la fórmula
+
+\[ \a_h(x_1, \cdots, x_k, y) := \exists z_1 \cdots \exists z_m (\underbrace{\bigwedge_{1 \le i \le m} \a_{g_i}(x_1, \cdots, x_k, z_i)}_{\text{``Cada $z_i$ es el resultado de aplicar $g_i$''}} \land \underbrace{\a_f(z_1, \cdots, z_m, y))}_{\text{``$y$ es el resultado de aplicar $f$ con las $z_i$}''}  \]
+
+La idea es la misma que antes: cuando interpretamos, el valor ligado a $z_i$ (que participa de la fórmula $\a_{g_i}$) ``guarda'' el resultado de aplicar $g_i$, y luego todas las $z_i$ ``entran a $f$'' en la fórmula $\a_f$. Más formalmente:
+
+\begin{align*}
+& V[ \a_h (x_1, \cdots, x_k, y)] = 1 \\
+& \iff \exists z_1, z_2,\cdots, z_m \in \N \text{ tal que $y = f(z_1 \cdots z_m)$ y para $1 \le i \le m$ es } z_i = g_i(x_1, \cdots, x_k)\\
+& \iff y = f(g_1(x_1 \cdots x_k), \cdots, g_m(x_1 \cdots, x_k)) \\
+& \iff y = (f \circ (g_1 \times \cdots \times g_m))(x_1, \cdots, x_k) \\
+& \iff y = h(x_1, \cdots, x_k)
+\end{align*}
+
+
+\subsection*{Expresando la recursión primitiva}
+\subsubsection*{Por qué se nos va a hacer difícil}
+Recordemos que $f : \N \ra \N$ se obtiene por recursión primitiva (de tipo I) a partir de $g : \N^2 \ra \N$ si
+
+\[ f(0) = k \in \N \]
+\[ f(n+1) = g(n, f(n)) \] 
+
+La dificultad de expresar la recursión primitiva es que de alguna manera necesitamos, para encontrar $f(n)$, tener ya disponible el valor de $f(n-1)$, y para eso el de $f(n-2)$, etcétera: en definitiva necesitamos una \textit{secuencia de $n-1$ valores} que logramos aplicando $g$ con el anterior (empezando desde el primero que es el valor de $f(0)$), y por ultimo aplicar $g$ una vez más y obtener $f(n)$. 
+\\
+
+En definitiva nos encantaría tener una fórmula para $f$ que haga algo así (recordar que los números en negrita son términos que se interpretan como el correspondiente números natural):
+
+\begin{align*}
+\a_f(x,y) := &\ \exists z_0 \cdots z_{x-1} \\
+& (z_0 = \bm{k} & [\textit{en $z_0$ ``queda'' $f(0)$}] \\
+& \land \a_g(\bz, z_0, z_1) & [\textit{$z_1$ = $g(0, z_0) = g(0, f(0)) = f(1)$}]  \\
+& \land \a_g(\bo, z_1, z_2) & [\textit{$z_2$ = $g(0, z_1) = g(1, f(1)) = f(2)$}]\\
+& \cdots \\
+& \land \a_g(\bm{x-2}, z_{x-2}, z_{x-1}) \\
+& \land \a_g(\bm{x-1}, z_{x-1}, y)) & [\textit{$y$ = $g(x-1, z_{x-1}) = g(x-1, f(x-1)) = f(x)$}] \\
+\end{align*}
+
+A la derecha entre corchetes se explica como se interpreta cada cláusula: en esta ``fórmula'' es como si los valores fueran construyéndose usando las variables $z_i$, donde $z_i$ guarda el valor de $f(i - 1)$, y el valor ``final'' en $y$ (que tiene que tener $f(x)$) queda como $g(x-1, f(x-1))$, que es lo que exige la recursión primitiva.   \\
+
+Pero \textbf{esta fórmula está increiblemente mal definida}, porque $x$ es una variable de la fórmula, no podemos usarla ``elegir'' la cantidad de variables $z$ y construir estas ``cadenas de $\land$ con $x$ elementos''. \textbf{¡$x$ ni siquiera es un número, es una variable del lenguaje $\L$!} Solamente lo interpretamos como un número cuando trabajamos en la interpretación $\I$. \\
+
+\subsubsection*{La salvación}
+
+En suma: cuando definamos la fórmula para la función $f$ solo vamos a tener \textbf{una cantidad fija de variables} (libres o ligadas) para usar, pero \textbf{nos gustaría de alguna manera tener acceso a una secuencia de valores de longitud arbitraria y variable} (donde van a ``aparecer'', cuando interpretemos la fórmula, los valores ``anteriores'' de la función). Para eso tenemos que poder \textbf{expresar algún tipo de codificación}. Por ahora vamos a enunciar un lema que dice que existe una función que nos va a salvar: nos dejará hacer exactamente lo que necesitamos. En el apéndice se muestra esa función efectivamente existe. Enunciamos entonces el siguiente \\
+
+
+\fbox{
+\noindent
+\begin{minipage}{0.9\linewidth}
+\hspace{1pt}
+\textbf{Lema:} Existe una función $B : \N^3 \ra \N$ tal que dada \textbf{cualquier} secuencia (finita) de valores $a_0, a_1, \cdots, a_n$, existen dos valores $b, c \in \N$  tal que $B(b, c, i) = a_i$ para $1 \le i \le n$. Más aún, la función es expresable mediante una fórmula $\beta(x_1,x_2,x_3,y)$ en el lenguaje para la aritmética que definimos.
+\end{minipage}
+}
+\vspace{15px} \\
+
+Esta función mágica nos garantiza que \textbf{cualquier secuencia finita de números puede ser codificada eligiendo convenientemente los primeros dos argumentos de $B$}, y una vez encontrados estos dos argumentos, la función nos da el $i$-ésimo elemento de la secuencia si el último argumento es $i$ (para $1 \le i \le n$). Por ejemplo, si tenemos la secuencia de números $21, 32, 1, 3, 1$ este lema nos dice que existen dos valores $b_0$ y $c_0$ tales que:
+
+\[ B(b_0,c_0,0) = 21 \]
+\[ B(b_0,c_0,1) = 32 \]
+\[ B(b_0,c_0,2) = 1 \]
+\[ B(b_0,c_0,3) = 3 \] 
+\[ B(b_0,c_0,4) = 1 \] 
+\\
+
+Y además podemos expresar en nuestro lenguaje el hecho ``$y = B(x_1,x_2,x_3)$'' mediante la fórmula $\b(x_1,x_2,x_3,y)$. 
+
+\subsubsection*{Expresando la recursión primitiva de tipo I}
+Con la fórmula $\b$ que expresa la función $B$ estamos en condiciones de expresar la recursión primitiva. Entonces, sea $g : \N \ra \N$ una función expresable mediante la fórmula $\a_g(x,y)$, y sea $f$ una función que se obtiene por recursión primitiva a partir de $g$, es decir que cumple
+
+\[ f(0) = k \in \N \]
+\[ f(n+1) = g(n, f(n)) \] 
+\\
+
+Vamos a construir una fórmula $\a_f(x,y)$ que expresará lo siguiente cuando la interpretemos:
+
+\begin{align*}
+& (x = 0) \Ra y = k \\
+& (x \neq 0) \Ra  \exists b\ \exists c\ [ B(b,c,0) = k \\
+& \hspace{75px} \land \forall i < x \text{ se cumple } B(b,c,i+1) = g(i,B(b,c,i)) \\
+& \hspace{75px} \land B(b,c,x) = y\ ]
+\end{align*}
+
+Es decir: 
+
+\begin{itemize}
+\item si $x$ es $0$ entonces $y$ tiene que ser $k$, que es $f(0)$
+\item si $x \neq 0$ (o sea $x > 0$) usamos la función $B$, condicionando $b$ y $c$ para que se cumpla:
+\[ B(b,c,0) = k \]
+\[ B(b,c,i+1) = g(i, B(b,c,i)) \]
+\subitem Con estas condiciones estamos invocando exactamente los $b$ y $c$ que codifican la secuencia de $x+1$ elementos $f(0), f(1), \cdots f(x)$: \[B(b,c,0) = k = f(0)\] \[B(b,c,1) = g(0, B(b,c,0) = g(0, f(0)) = f(1) \] \[ \cdots \] \[B(b,c,x-1) = g(0, B(b,c,x-2) = g(x-2, f(x-2)) = f(x-1) \] \[B(b,c,x) = g(0, B(b,c,x-1) = g(x-1, f(x-1)) = f(x) \].
+\subitem Finalmente, imponemos que $B(b,c,x) = y$: esto implica que $y$ tiene que ser $B(b,c,x) = f(x)$, que es lo que queremos.
+\end{itemize} 
+
+Para escribirla en el lenguaje $\L$ tenemos que usar $\a_g(x_1, x_2,y)$ para expresar ``$y = g(x_1, x_2)$'', $\b(x_1,x_2,x_3, y)$ para expresar ``$y = B(x_1,x_2,x_3)$'',  $\a_{<}(x,y)$ para expresar ``$x < y$'', y $\s(i, \bo)$ para expresar ``$i + 1$'', y además hay que pasar por variables auxiliares ($z_1$ y $z_2$ en la fórmula de abajo) para componer funciones, entonces queda esta fórmula terrible:
+
+
+\begin{align*}
+\a_f(x,y) :=\ & ((x = \bz \ra y = \bm{k})\\
+& \land (\neg\ x = \bz \\
+& \hspace{30px} \ra  \exists b\ \exists c\ (\underbrace{\beta(b,c,\bz,\bm{k}}_{B(b,c,0) = k}) \\ & \hspace{60px} \land \forall i\ (\underbrace{\a_{<}(i, x)}_{i < x} \ra \underbrace{(\exists z_1 \exists z_2 (\underbrace{\b(b,c,i,z_1)}_{z_1 = B(b,c,i)} \land \underbrace{\a_g(i,z_1,z_2))}_{z_2 = g(i,z_1))} \land \underbrace{\b(b,c,\s(i, \bo), z_2)))}_{{B(b,c,i+1) = z_2}}}_{B(b,c,i+1) = g(i, B(b,c,i))}  \\
+& \hspace{60px}\land \underbrace{\beta(b,c,x,y)}_{y = B(b,c,x)}))
+\end{align*}
+
+
+Para decir que $\a_f$ expresa $f$ debemos mostrar que $ V_{x=a, y=b}[ \a_f(x, y) ] = 1 \iff y = f(x)$. La demostración a partir de las sucesivas aplicaciones de $V$ a la fórmula es muy engorrosa, así que no la haremos aquí, pero la idea es:
+
+\begin{itemize}
+\item para $(\Ra)$: como las fórmulas $\b, \a_g, \a_{<}$, $\a_{suc}$ expresan $B$, $g$, $<$ y $suc$ respectivamente, si la fórmula $\a_f$ ``es verdadera" (o sea: si $V[\a_f] = 1$) entonces esos $b$ y $c$ ``que existen'' codifican exactamente la secuencia $f(0), \cdots, f(x)$  y entonces $y$ siempre vale $f(x)$, y entonces queda demostrado
+
+
+\item para $(\Leftarrow)$: partimos de que $y = f(x)$, si $x = 0$ entonces $y = f(0) = k$ entonces $V_{v_{...}}(\a_f) = 1$, y si $x > 0$  el lema que enunciamos nos dice que \textbf{sí existen $b$ y $c$} que cumplen lo que dice la fórmula (o sea que $B(b,c,i) = f(i)$ para $1 \le i \le x$), entonces $V[\a_f] = 1$, y queda demostrado.
+
+\end{itemize}
+
+
+\subsubsection*{Expresando la recursión primitiva de tipo II}
+
+La generalización para más de una variable usa exactamente la misma idea, lo único que cambia es que ahora las funciones tienen más variables entonces la fórmula se escribe un poquito distinto. \\
+
+Así, sea $k > 1$ y $f : \N^{k} \ra \N$ una función que se obtiene por recursión primitiva a partir de $g : \N^{k-1} \ra \N$ y $h : \N^{k+1} \ra \N$, es decir:
+
+\[ f(x_1, \cdots, x_{k-1}, 0) = g(x_1, \cdots x_{k-1})\ \]
+\[ f(x_1, \cdots, x_{k-1}, n+1) = h(x_1, \cdots, x_{k-1}, n, f(x_1, \cdots, n)) \] 
+
+Entonces si $g$ y $h$ son expresables mediante fórmulas $\a_g(x_1,\cdots, x_{k-1}, y)$ y $\a_h(x_1,\cdots, x_k, x_{k+1}, y)$ respectivamente, $f$ también lo es, mediante la fórmula $\a_f(x_1, \cdots, x_k, y)$ que exprese esto:
+
+\begin{align*}
+& (x_k = 0) \Ra y = g(x_1, \cdots x_{k-1}) \\
+& (x_k \neq 0) \Ra  \exists b\ \exists c\ [ B(b,c,0) = g(x_1, \cdots, x_{k-1}) \\
+& \hspace{75px} \land \forall i < x \text{ se cumple } B(b,c,i+1) = h(x_1,\cdots, x_{k-1}, i ,B(b,c,i)) \\
+& \hspace{75px} \land B(b,c,x) = y\ ]
+\end{align*}
+
+
+La fórmula en $\L$ es:
+\begin{align*}
+\a_f(x_1, \cdots, x_k, y) := &\ (x_k = \bz \ra \a_g(x_1, \cdots, x_{k-1}, y)\\
+& \land (\neg\ x_k = \bz \\
+& \hspace{15px} \ra  \exists b\ \exists c\ (\exists z (\a_g(x_1, \cdots, x_{k-1}, z) \land \beta(b,c,\bz,z)) \\ & \hspace{35px} \land \forall i\ (\a_{<}(i, x_k) \ra (\exists z_1 \exists z_2 (\b(b,c,i,z_1) \land \a_h(x_1, \cdots, x_{k-1},i,z_1, z_2) \land \b(b,c,\s(i,\bo), z_2)) )  \\
+& \hspace{35px}\land \beta(b,c,x,y)))
+\end{align*}
+
+Y la demostración de que efectivamente $\a_f$ expresa $f$ sigue la misma línea que en la de recursión de tipo I que describimos en la sección anterior.
+
+
+\subsection*{Conclusión: las funciones recursivas primitivas son expresables en nuestro lenguaje}
+
+Si $f$ es una función RP podemos definir su complejidad como la mínima cantidad de pasos (en el sentido: composiciones o recursión primitiva con otras funciones RP) necesarios para construirla a partir de funciones iniciales. Por definición de las funciones RP este numero siempre existe y es un número natural, entonces podemos demostrar nuestra proposición por inducción en la complejidad.\\
+
+\fbox{
+\noindent
+\begin{minipage}{0.9\linewidth}
+\hspace{1pt}
+
+\textbf{Proposición}: Si $f$ es una función recursiva primitiva entonces $f$ es expresable en nuestro lenguaje $\L$ para la aritmética con la interpretación $\I = (\N, +, \cdot, 0, 1)$
+\vspace{5px}
+\end{minipage}
+}
+\vspace{10px} \\
+
+\textbf{Demostración}:
+\textit{Caso base}: Si la complejidad de $f$ es $0$ entonces $f$ es una función inicial, y demostramos que las funciones iniciales son expresables.\\
+
+\textit{Hipótesis inductiva:} Si $f$ es una función RP de complejidad $k < n$ entonces $f$ es expresable. \\
+\textit{Tesis:} Si $f$ es una función RP de complejidad $n+1$ entonces $f$ es expresable. \\
+
+Ciertamente: sea $f$ una función RP de complejidad $n+1$, entonces pasa alguno de los siguientes:
+\begin{enumerate}
+
+\item $f$ se obtuvo por composición de dos funciones $g_1$ y $g_2$
+\item $f$ se obtuvo por recursión primitiva de tipo I a partir de una $g$ recursiva primitiva
+\item  $f$ se obtuvo por recursión primitiva de tipo II a partir de dos $g_1$ y $g_2$ que también son RP.
+
+\end{enumerate}
+En los tres casos, las funciones con las que se construye $f$ son funciones RP con complejidad menor a $n+1$ (pues la construcción de $f$ constituye un último paso, entonces pueden construirse con al menos un paso menos). Entonces por hipótesis inductiva son expresables, y con lo que ya demostramos podemos en los tres casos afirmar que entonces $f$ también es expresable. 
+
+\qed
+\\
+
+\textbf{Corolario:} Cualquier conjunto recursivo primitivo es expresable en $(\N, +, \cdot, 0, 1)$. \\
+
+\textbf{Demostración:} Un conjunto $A \subset \N$ es RP si su función característica $\chi_A : \N \ra \{ 0, 1 \}$ es RP. Pero si $\chi_A$ es RP entonces, por lo que acabamos de demostrar, existe una fórmula $\a_{\chi_A}(x,y)$ que la expresa. Entonces la fórmula
+\[ \a_A(x) := \a_{\chi_A}(x, \bo)\]
+
+expresa al conjunto $A$: \[V[\a_{\chi_A}(x, \bo)] = 1 \iff 1 = \chi_A(x) \iff x \in A \]
+
+\qed
+\section*{Apéndice}
+
+\subsection*{Existencia y expresión de la función $B$}
+
+Para terminar, vamos a definir la función $B$ del lema y probar que tiene las propiedades que dijimos, es decir, demostraremos el lema. Esta función se llama en la literatura ``función beta de Gödel''.\\
+
+Sea entonces 
+\[B : \N^3 \ra \N \]
+\[B(x, y, i) = resto(x, (i+1) \cdot y + 1) \]
+
+donde $resto(x,y)$ es el resto de dividir $x$ por $y$. \\
+
+\textbf{Afirmación:} dada cualquier secuencia de numeros naturales $a_0, a_1, \cdots, a_k$ existen $b$ y $c$ tales que $B(b,c,i) = a_i$ para $0 \le i \le k$. \\
+
+\textbf{Demostración}: Sea $a_0, a_1, \cdots, a_k$ una secuencia de $k+1$ numeros naturales, y sea $s$ un número mayor que todos los $a_k$ y que $k$, por ejemplo $s = 1 + max \{ a_0, \cdots a_k, k \}$. \\
+
+Ahora definimos los números $m_i = (i+1)s! + 1$, con $0 \le i \le k$, (notar que tiene el formato del segundo argumento a $resto$ que aplica $B$), es decir:
+\begin{align*}
+&m_0 =  s! + 1\\
+&m_1 = 2\cdot s! + 1 \\
+&m_2 = 3\cdot s! + 1 \\
+& \cdots \\
+&m_{k-1} = k\cdot s! + 1 \\
+&m_{k} = (k+1) \cdot s! + 1
+\end{align*}
+
+\textbf{Afirmación}: Estos números son coprimos dos a dos: $i \neq j \Ra m_i\ \bot\ m_j$ para $0 \le i,j \le k$.\\
+
+\textbf{Demostración}: Supongamos que no para llegar a un absurdo, es decir, supongamos que existe $p$ primo tal que $^p |_{m_i}$ y $^p |_{m_j}$ con $0 \le i < j \le k$. Vamos a usar estas propiedades de la divisibilidad:
+
+\begin{enumerate} 
+\item $^a|_b$ y $^a|_c \Rightarrow$ $^a|_{b - c}$ 
+\item $^a|_b \Rightarrow$ $^a|_{c\cdot b}$ para cualquier $c \in \mathbb{Z}$
+\item $^a|_{b \cdot c} \Rightarrow$ $^a|_b$ ó $^a|_c$ para todo $b, c \in \mathbb{Z}$
+\item $^a|_{b}$ y $^b |_c$ $\Rightarrow$ $^a|_c$
+\end{enumerate}
+
+Si $p$ divide a $m_i$ y $m_j$ entonces (por $(1)$) $p$ divide a la diferencia $m_j - m_i$, es decir $^p |_{(j-i)s!}$, y entonces (por $(3)$) $^p |_{(j-i)}$ o $^p |_{s!}$.\\
+
+Pero $j - i < k < s$, entonces $(j-i)$ es un factor de $s!$, entonces $^{j-i}|_{s!}$ y entonces forzosamente tenemos que  $^p |_{s!}$ (porque si $p$ divide a un factor de $s!$ entonces también divide a $s!$, la  propiedad $(4)$ que escribimos arriba). Entonces también $^p |_ {(i+1)\cdot s!}$, porque $i+1$ es un número entero (propiedad $(2)$). \\
+
+ Pero habíamos dicho que $^p |_{m_i = (i+1)s! + 1}$, entonces $^p|_{(i+1)s! + 1 - ((i+1) \cdot s!)}$, es decir $^p |_1$. ¡\textbf{Absurdo}! $p$ es primo. El absurdo vino de suponer que existian $m_i$, y $m_j$ distintos que no eran coprimos, entonces debe ser que todos son coprimos dos a dos.
+
+\qed
+
+Consideremos ahora el sistema de congruencias
+
+\begin{align*}
+& x \equiv a_0\ (mod\ m_0) \\
+& x \equiv a_1\ (mod\ m_1) \\
+& x \equiv a_2\ (mod\ m_2) \\
+& \cdots \\
+& x \equiv a_k\ (mod\ m_{k}) \\
+\end{align*}
+
+ 
+
+Como los números $m_0, \cdots, m_k$ son coprimos dos a dos, entonces por el Teorema Chino del Resto existe una única solución módulo $M$, donde $M = m_0 \cdot m_1 \cdots m_k$. Sea $x_0 \in \N$ la única solución que cumple $0 \le x_0 < M$. Entonces:
+
+\begin{align*}
+& x_0 \equiv a_0\ (mod\ m_0) \\
+& x_0 \equiv a_2\ (mod\ m_1) \\
+& x_0 \equiv a_3\ (mod\ m_2) \\
+& \cdots \\
+& x_0 \equiv a_k\ (mod\ m_{k}) \\
+\end{align*}
+
+Notemos que como $0 \le a_i < m_i$ (porque $s > a_i$ y la construcción de $m_i$), entonces $a_i$ \textbf{es efectivamente el resto de dividir $x_0$ por $m_i = (i+1)s! + 1$}, entonces tenemos que: 
+
+
+\begin{align*}
+& a_0 = resto(x_0, s! + 1) = B(x_0, s!, 0)\\
+& a_1 = resto(x_0, 2\cdot s!) = B(x_0, s!, 1)\\
+& \cdots \\
+& a_{k-1} = resto(x_0, k\cdot s! + 1) = B(x_0, s!, k-1)\\
+& a_k = resto(x_0, (k+1)\cdot s! + 1) = B(x_0, s!, k)\\
+\end{align*}
+
+Y así demostramos lo que queríamos: existen $b$ y $c$ naturales tales  que $B(b,c,i) = a_i$ para todo $0 \le i \le k$ (con los nombres que elegimos en la demostración, $b = x_0$ y $c = s!$).
+
+\qed
+
+\subsubsection*{Existe una fórmula $\b$ que expresa a $B$ en nuestra interpretación}
+
+Finalmente, vemos que la función $B$ puede expresarse con una fórmula $\b(x_1, x_2, x_3, y)$ de nuestro lenguaje. Para eso primero expresaremos la función $resto$. Recordemos que el resto de dividir $a$ por $b$ es el único número $r$ con $0 \le r < b$ tal que $a = bq + r$ para algún $q \in \N$. Así, la fórmula que expresa la función \textit{resto} es:
+
+\[ \a_{resto}(x_1, x_2, y) := (\a_{\le}(\bz, y) \land \a_{<}(y,x_2) \land \exists q\ \s(\p(q, x_2),y) = x_1) \]
+\\
+$\a_{resto}$ expresa $resto$:
+\begin{align*}
+& V[\a_{resto} (x_1,x_2,y)] = 1  \\
+& \iff 0 \le y \text{, } y < x_2\text{, y existe $q \in \N$ tal que } qx_2 + y  = x_1 \\
+& \iff resto(x_1, x_2) = y 
+\end{align*}
+
+
+Finalmente, la fórmula $\b$ que expresa $B$ es 
+
+\[ \b(x_1, x_2, x_3, y) = \a_{resto}(x_1, \s(\p(\s(x_3,\bo),x_2),\bo),y)\]
+
+En efecto:
+
+\begin{align*}
+& V[\b(x_1,x_2, x_3, y)] = 1  \\
+& \iff y = resto(x_1, (((x_3 + 1) \cdot x_2) + 1)) & \textit{ porque $\a_{resto}$ expresa la función $resto$ } \\
+& \iff y = resto(x_1, (x_3 + 1) \cdot x_2 + 1)) \\
+& \iff y = B(x_1, x_2, x_3) 
+\end{align*}
+
+\qed
+
+\end{document}
+
+
+
+
+
+
