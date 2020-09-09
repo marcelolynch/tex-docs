@@ -1,0 +1,647 @@
+\documentclass{article}
+\usepackage[latin1]{inputenc}
+\usepackage{graphicx, caption}
+\usepackage{mathrsfs}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\renewcommand{\figurename}{Figura}
+\usepackage{ dsfont }
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{titlecaps}
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+%\usepackage{float} 
+\usetikzlibrary{calc}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{verbatim} 
+\usepackage{titlecaps}% http://ctan.org/pkg/titlecaps
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{ITBA}
+\fancyhead[L]{Lógica Computacional}
+\fancyfoot[C]{\thepage}
+
+\newcommand{\tikzscale}{0.8}
+ \theoremstyle{definition}
+\newtheorem{ejercicio}{Ejercicio}
+\newtheorem*{solucion}{Solución}
+
+\newtheorem*{teorema}{Teorema}
+\captionsetup{width=5.5in, font=small}
+
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\G}{\Gamma}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\bra}{\textcolor{blue}{\longrightarrow}}
+\newcommand{\bla}{\textcolor{blue}{\longleftarrow}}
+\newcommand{\rra}{\textcolor{red}{\longrightarrow}}
+\newcommand{\rla}{\textcolor{red}{\longleftarrow}}
+\newcommand{\Ra}{\Rightarrow}
+\renewcommand{\S}{\Sigma}
+
+\renewcommand{\a}{\alpha}
+\renewcommand{\b}{\beta}
+
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+
+\title{Una demostración gráfica del teorema de Bernstein}
+\author{Marcelo Lynch\footnote{\texttt{mlynch@itba.edu.ar} - son bienvenidas consultas, comentarios y correcciones}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{comment}
+\subsection*{Introducción}
+\subsubsection*{Definiciones}
+Empezamos recordando algunas definiciones:
+\begin{itemize}
+\item Si $A$ es un conjunto, vamos a notar con $\#A$ a un objeto que vamos a llamar el \textbf{cardinal de A}.
+\item Dos cardinales $\#A$ y $\#B$ son iguales ($\#A = \#B$) si existe una función biyectiva entre $A$ y $B$.
+\item Decimos que $\#A \preceq \#B$ si existe una función inyectiva $f : A \rightarrow B$.
+\end{itemize}
+
+%\textbf{Observación}: en ningún lugar estamos diciendo que el cardinal de un conjunto $A$ es ``cuántos elementos tiene'', solamente definimos $\#A$ como un objeto matemático asociado a $A$ que tiene esas reglas.\\
+
+\textbf{Observación}: Si bien usamos (en clase) el símbolo $\le$ para este concepto, acá estamos usamos el símbolo $\preceq$ (que se parece pero no es el mismo). Esto es para hacer explícito que $\preceq$ es un nuevo concepto que estamos definiendo acá y no tiene nada que ver con, por ejemplo, el orden $\le$ entre números reales (sobre todo porque vamos a usar el $\le$ entre números reales).
+
+
+\subsubsection*{¿Es $\preceq$ una relación de orden entre cardinales?}
+Se puede mostrar de forma bastante directa que el símbolo $=$ representa una relación de equivalencia entre cardinales. Por otro lado, la elección del símbolo $\preceq$ (o en todo caso $\le$ como hacemos en clase) sugiere que nos gustaría que en efecto represente una relación de orden, es decir que se cumpla:
+
+\begin{itemize}
+\item Reflexividad: $\#A \preceq \#A$ para cualquier $A$ 
+\item Transitividad: $\#A \preceq \#B$ y $\#B \preceq \#C$ entonces $\#A \preceq \#C$
+\item Antisimetría: $\#A \preceq \#B$ y $\#B \preceq \#A \Rightarrow \#A = \#B$
+\end{itemize}
+
+La reflexividad vale: la funcion $id_A : A \rightarrow A\ /\ id(x) = x$ es inyectiva ($x \neq y \Rightarrow id_A(x) \neq id_A(y)$ por definición), entonces $\#A \preceq \#A$.  \\
+
+La transitividad también: si $\#A \preceq \#B$ y $\#B \preceq \#C$ entonces existen $f: A \rightarrow B$ y $g : B \rightarrow C$ ambas inyectivas. Pero entonces $g \circ f : A \rightarrow C$ es inyectiva: \[x \neq y \underbrace{\Rightarrow}_{f\ iny.} f(x) \neq f(y) \underbrace{\Rightarrow}_{g\ iny.} g(f(x)) \neq g(f(y)) \Rightarrow (g \circ f)(x) \neq (g \circ f)(y)\].\\
+
+Entonces $\#A \preceq \#C$.
+
+La antisimetría es donde la cosa se complica. Si $\#A \preceq \#B$ y $\#B \preceq \#A$, entonces sabemos que existen $f : A \Rightarrow B$ y $g: B \Rightarrow A$, ambas inyectivas. Para concluir $\#A = \#B$ tenemos que mostrar que existe una biyección entre $A$ y $B$, solo conociendo la existencia de esas $f$ y $g$. ¿Cómo hacemos? No parece inmediato, y de hecho no lo es y por eso merece un teorema aparte.
+
+
+\subsection*{El teorema de Bernstein}
+Ahora sí, enunciemos el teorema que dice exactamente lo que nos interesa: el teorema de Bernstein, también llamado \textit{de Cantor-Bernstein} o \textit{de Cantor-Bernstein-Schröder}.
+\end{comment}
+
+\fbox{
+\noindent
+\begin{minipage}{0.9\linewidth}
+\fontsize{11pt}{11pt}\selectfont
+\hspace{1pt}
+\begin{teorema}[de Bernstein] Sean $A$ y $B$ dos conjuntos. Si existen dos funciones inyectivas $f: A \rightarrow B$ y $g : B \rightarrow A$  entonces existe una función biyectiva $h : A \rightarrow B$.
+\end{teorema}
+\vspace{1pt}
+\end{minipage}
+}
+
+% Con los conceptos que definimos para cardinales, el teorema enuncia la antisimetría: si $\#A \preceq \#B$ y $\#B \preceq \#A$ entonces $\#A = \#B$. 
+
+
+\subsection*{Una demostración con flechitas}
+Vamos a esbozar la demostración, con ayuda de diagramas que nos van a dejar visualizar los conceptos necesarios para la construcción de la biyección. Supongamos entonces que tenemos dos conjuntos $A$ y $B$ y funciones inyectivas $f : A \ra B$ y $g : B \ra A$. Vamos a asumir que \textbf{$A$ y $B$ son disjuntos}. Podemos asumirlo sin perder generalidad: en el apéndice al final del documento se puede encontrar la justificación.
+
+\subsubsection*{Funciones como flechas}
+Al fin y al cabo construir una función $h : A \ra B$ es \textbf{dar un montón de flechas} que cumplan que \textbf{cada elemento de $A$ tenga una única flecha que llega a un elemento de $B$}. La función es biyectiva si a \textbf{todo} elemento de $B$ le llega \textbf{exactamente una} flecha desde $A$. En nuestro caso, para construir la $h$ biyectiva lo único que tenemos es las funciones inyectivas $f : A \ra B$ y $g : B \ra A$. \\
+
+Es decir tenemos a nuestra disposición un conjunto de flechas que van de $A$ a $B$ (las de $f$) y otro conjunto de flechas que van de $B$ a $A$ (las de $g$). En lo que sigue las flechas de $f$ las vamos a dibujar de color \textcolor{blue}{azul} y las flechas de $g$ de color \textcolor{red}{rojo}. La función biyectiva que queremos construir será $h : A \ra B$ y la vamos a representar con flechas \textcolor{orange}{naranja}. \\
+
+Como $f$ es una función con dominio en $A$, sabemos que de todo elemento de $A$ sale una flecha azul que va a parar a un elemento de $B$: $\textcolor{blue}{a \longrightarrow f(a)}$. De la misma forma, de cada elemento de $B$ sale una flecha roja que va a parar a un elemento de $A$: $\textcolor{red}{b \longrightarrow g(b)}$.\\
+
+¿Qué significa (en términos de flechas) que las funciones $f$ y $g$ sean inyectivas? En una función inyectiva a un elemento del codominio le llega \textbf{a lo sumo una flecha}. Podría no llegarle ninguna flecha: en este caso decimos que el elemento \textit{no tiene preimagen} por la función. Por ejemplo, en la función inyectiva $d: \N \ra \N\ /\ d(n) = 2n$, los números impares no tienen preimagen por $d$, no les llega ninguna flecha. Y a los pares les llega exactamente una flecha. 
+\subsubsection*{Siguiendo las flechas}
+¿Que pasa si seguimos las flechas de $f$ y $g$ desde un elemento cualquiera? Por ejemplo, que pasa si desde $a \in A$ seguimos las flechas ``hacia adelante'', es decir, aplicando las funciones $f$ y $g$:
+
+\[ \underbrace{a}_{\in A} \bra \underbrace{f(a)}_{\in B} \rra \underbrace{g(f(a))}_{\in A} \bra \underbrace{f(g(f(a))}_{\in B} \rra g(f(g(f(a))) \rra \cdots \]
+
+Las flechas van alternando entre elementos de $A$ y $B$ mientras vamos aplicando $f$ y $g$. Notemos que este proceso de ``seguir flechas para adelante'' puede continuar siempre, porque \textbf{todos los elementos tienen una flecha que sale} (en otras palabras, siempre puedo aplicar la función). \\
+
+Una cosa que puede pasar es que en algún momento siguiendo flechas volvamos a encontrarnos con $a$: puede ser que siguiendo la cadena en algún momento una flecha azul caiga justo en el elemento de $B$ que es la preimagen de $a$. Así, la siguiente flecha irá a parar a $a$:
+
+
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',auto,node distance=2cm]
+  \node (1) {$a$};
+  \node (2) [right of=1] {$f(a)$};
+  \node (3) [right of=2] {$g(f(a))$};
+  \node (4) [right of=3] {$\cdots$};
+  \node (5) [right of=4] {$\underbrace{f(g(\cdots(f(a))}_{preimagen\ de\ a}$};
+
+  \path[every node/.style={font=\sffamily\small}]
+    (1) edge [blue] node [right] {} (2)
+    (2) edge [red] node [right] {} (3)
+    (3) edge [blue] node [right] {} (4)
+    (4) edge [blue] node [right] {} (5)
+    (5) edge[red, bend right=20] node [left] {} (1);
+\end{tikzpicture}
+\end{center}
+
+
+%\[ a \bra f(a) \rra g(f(a)) \cdots \bra \underbrace{f(g \cdots (f(a))}_{Pi_g(a)} \rra  a \bra f(a) \rra g(f(a)) \bra \cdots \rra a \bra \cdots \]
+
+Notar que en estos casos la cadena siempre es cíclica: no quedan elementos ``afuera'' del ciclo, es decir, no podría pasar algo así (donde todos los $a_i$ y $b_i$ son distintos):
+
+\begin{center}
+\begin{tikzpicture}[->,>=stealth',auto,node distance=1cm]
+  \node (1) {$a_1$};
+  \node (2) [right of=1] {$b_1$};
+  \node (3) [right of=2] {$a_2$};
+  \node (4) [right of=3] {$b_2$};
+  \node (5) [right of=4] {$a_3$};
+  \node (6) [right of=5] {$b_3$};
+
+  \path[every node/.style={font=\sffamily\small}]
+    (1) edge [blue] node [right] {} (2)
+    (2) edge [red] node [right] {} (3)
+    (3) edge [blue] node [right] {} (4)
+    (4) edge [red] node [right] {} (5)
+    (5) edge [blue] node [right] {} (6)
+    (6) edge[red, bend right] node [left] {} (3);
+\end{tikzpicture}
+\end{center}
+
+Porque como las funciones son inyectivas, \textbf{no puede ser que a $a_2$ le lleguen dos flechas distintas} (la de $b_1$ y la de $b_3$).\\
+
+¿\textbf{Qué pasa si ahora queremos seguir las flechas ``hacia atrás''}, yendo de preimagen a preimagen? En este caso quizás no podemos continuar el proceso indefinidamente: si me encuentro un elemento sin preimagen, al que no le llega ninguna flecha, entonces tengo que frenar ahí. Por ejemplo, empezando en algún $b \in B$ podría ser:
+
+\[ b\ \bla \underbrace{\a_1}_{\text{preim. de $b$}} \rla \underbrace{\b_1}_{\text{preim. de $\a_1$}} \bla \underbrace{\a_2}_{\text{preim. de $\b_1$}} \bullet \]
+
+
+En este ejemplo no existe ningún $\b \in B$ tal que $g(\b) = \a_2$, entonces podemos seguir las flechas hacia atrás solo hasta ahí.
+
+
+\subsubsection*{Cadenas}
+Con esta idea de seguir flechas, vemos que si tomamos cualquier elemento, sea de $A$ o de $B$, podemos construir a partir del mismo una \textit{cadena} siguiendo las flechas para los dos lados, alternando entre elementos de $A$ y de $B$:
+
+\[
+    (\cdots?) \rra \a_1 \bra \b_1 \rra a \bra f(a) \rra g(f(a)) \rra (\cdots)
+\]
+
+Notemos que la cadena \textbf{nunca se ramifica}, siempre es ``lineal'', porque como máximo tenemos \textit{una} flecha hacia atrás (y siempre una sola hacia adelante). Así, cada cadena puede ser de uno y solo uno de estos tipos:
+
+\begin{enumerate}
+\item \textit{Cíclica}, como la que vimos más arriba
+\item \textit{Sin ``principio'' ni ``fin''}: todos los elementos tienen preimagen (siempre puedo ir hacia atrás), y no se forma un ciclo (siempre puedo seguir flechas sin repetir elementos).
+\item \textit{Que ``empieza'' en un elemento de $A$} que no tiene preimagen, es decir no puedo seguir ninguna flecha hacia atrás.
+\item \textit{Que ``empieza'' en un elemento de $B$} que no tiene preimagen.
+\end{enumerate} 
+
+
+\begin{comment}
+Un poco más formalmente podemos definir:
+%%
+\textbf{Definición}: Sea $x \in A\cup B$, la \textit{cadena de $x$} es el conjunto $\chi(x)$ que cumple:
+
+\begin{enumerate}
+\item $x \in \chi(x)$ 
+\item 
+\end{enumerate}
+\end{comment}
+
+\underline{Observaciones}:
+
+\begin{itemize}
+\item se puede ``armar'' la misma cadena empezando desde dos elementos distintos: por ejemplo, si empezamos a seguir flechas desde $a$ o desde $f(a)$, terminamos al final con la misma cadena
+\item las cadenas tienen infinitos elementos salvo en el caso cíclico (y en el caso cíclico siempre hay un numero par de eslabones: ¡pensar por qué!)
+\end{itemize}
+
+
+\subsubsection*{Las cadenas particionan los conjuntos}
+Llegamos ahora a la primera idea clave de la demostración, en forma de la siguiente afirmación:
+
+\begin{center}
+\textbf{Cada elemento de $A$ o de $B$ pertenece a una y solo una cadena}
+\end{center}
+
+\newcommand{\rR}{\mathcal{R}}
+Veamos por qué es cierto. Intuitivamente, tenemos que  evidentemente cualquier elemento pertenece a \textit{alguna} de estas cadenas, porque la puedo armar a partir de ese elemento. Pero además hay una sola forma de armar la cadena\footnote{El lector o lectora atentx puede descubrir  acá habría algún problemita si $A$ y $B$ no son disjuntos: si $x \in A\cap B$ entonces de $x$ ¡pueden salir tanto una flecha roja como una azul! Y podría ``elegir'' cualquiera de las dos y armar cadenas distintas.}, porque como $f$ y $g$ son inyectivas siempre tengo \textbf{una sola opción de flecha hacia adelante y a lo sumo una sola opción de flecha hacia atrás (o ninguna, y la cadena frena ahí)}.\\
+
+Podemos ir un poco más allá definiendo una relación $\rR$ en $A \cup B$ tal que: \[x \rR y \iff \text{puedo llegar de $x$ a $y$ siguiendo  flechas de $f$ y $g$, hacia adelante o hacia atrás}\]
+
+Se puede mostrar que $\rR$ es una relación de equivalencia (y se deja como ejercicio al lector o lectora). Las clases de equivalencia de $\rR$ \textbf{forman entonces una partición de $A\cup B$} y \textbf{cada clase tiene los elementos de una de estas cadenas que estabamos construyendo}.\\
+
+Entonces \textbf{las cadenas nos particionan tanto a $A$ como $B$} (si bien las clases de equivalencia son sobre $A\cup B$, podemos conseguir las particiones sobre $A$ o $B$ individualmente, intersecando con $A$ y $B$). La Figura \ref{fig:part} a continuación nos ilustra la situación: \\
+
+\begin{figure}[ht!]
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+\def\height{9.1}
+\def\width{2}
+\def\pad{1}
+\def\cornerb{\width + \pad}
+
+\draw[rounded corners] (0, 0) rectangle (\width, \height) {};
+\draw[rounded corners] (\width + \pad, 0) rectangle (2 * \width + \pad, \height) {};
+
+
+\foreach \color [count=\i] in {cyan,magenta,yellow}
+{
+ \def\cornerinnerax{0.1}
+ \def\cornerinneray{0.1 + 3 * \i - 3 }
+ \def\topinnera{(\width - 0.1, 3 * \i)}
+ 
+ \def\cornerinnerb{(0.1 + \cornerb , 0.1 + 3 * \i - 3)}
+
+ \draw[rounded corners,fill=\color,opacity=0.15] (\cornerinnerax, \cornerinneray) rectangle \topinnera {};
+
+ \draw[rounded corners,fill=\color,opacity=0.15] \cornerinnerb rectangle (\cornerb + \width - 0.1, 3 * \i) {};
+
+
+\def\ih{0.61}
+\foreach \j in {0,1,2}
+{ 
+	\draw[->,thick] ($(0.1 , 0.1 + 3 * \i - 3) + (0.5 * \width, 0.5 + \j * \ih)$) -- ($(0.1 + \cornerb , 0.1 + 3 * \i - 3) + (1,1) + (0, \j * \ih )$);
+
+	\draw[->,thick] ($(0.1 + \cornerb , 0.1 + 3 * \i - 3) + (1,1) + (0, \j * \ih )$) -- ($(0.1 , 0.1 + 3 * \i - 3) + (0.5 * \width, 0.5 + \j * \ih + \ih)$);
+
+}
+
+\node at (1,-0.5) {$A$};
+\node at (\cornerb + 1,-0.5) {$B$};
+}
+\end{tikzpicture}
+\end{center}
+\caption{Las cadenas particionan a los conjuntos A y B (las particiones de $A\cup B$ se muestran en distintos colores).}
+\label{fig:part}
+\end{figure}
+
+\newpage
+
+
+\textbf{¿Para qué nos sirve esto?} La idea es la siguiente: recordemos que nuestro objetivo es encontrar \textbf{para cada elemento de $A$ uno y solo un elemento de $B$} y unirlos con una flecha naranja (esto es construir la biyección $h$). Como las cadenas nos cubren a todos los elementos, entonces si encontramos una forma de hacer este proceso para cada cadena, sin olvidarnos de ningun elemento en la cadena, entonces tendremos la función completa (ver la Figura \ref{fig:hh}). 
+\begin{figure}[!htb]
+\begin{center}
+\begin{tikzpicture}[scale = 0.9]
+\def\height{9.1}
+\def\width{2}
+\def\pad{1}
+\def\cornerb{\width + \pad}
+
+\draw[rounded corners] (0, 0) rectangle (\width, \height) {};
+\draw[rounded corners] (\width + \pad, 0) rectangle (2 * \width + \pad, \height) {};
+
+
+\foreach \color [count=\i] in {cyan,magenta,yellow}
+{
+ \def\cornerinnerax{0.1}
+ \def\cornerinneray{0.1 + 3 * \i - 3 }
+ \def\topinnera{(\width - 0.1, 3 * \i)}
+ 
+ \def\cornerinnerb{(0.1 + \cornerb , 0.1 + 3 * \i - 3)}
+
+ \draw[rounded corners,color=\color,opacity=0.7] (\cornerinnerax, \cornerinneray) rectangle \topinnera {};
+
+ \draw[rounded corners,color=\color,opacity=0.7] \cornerinnerb rectangle (\cornerb + \width - 0.1, 3 * \i) {};
+
+
+\def\ih{0.61}
+\foreach \j in {0,1,2}
+{ 
+	\draw[->,color=orange,thick] ($(0.1 , 0.1 + 3 * \i - 3) + (0.5 * \width, 0.5 + \j * \ih)$) -- ($(0.1 + \cornerb , 0.1 + 3 * \i - 3) + (1,1) + (0, \j * \ih )$);
+}
+}
+
+\node at (1,-0.5) {$A$};
+\node at (\cornerb + 1,-0.5) {$B$};
+
+\end{tikzpicture}
+\end{center}
+\caption{Si construyo las flechas de $h$ ``cadena a cadena'', consigo la función $h: A \ra B$ completa: no me va a quedar ningún elemento suelto porque las cadenas cubren todo.}
+\label{fig:hh}
+\end{figure}
+
+
+
+\subsubsection*{Construyendo $h$}
+Veamos entonces para cada tipo de cadena como construimos ``localmente'' las flechas de $h$. \\
+
+\underline{Cadenas cíclicas, cadenas sin principio ni fin y cadenas que empiezan en $A$}. En estos tres casos podemos simplemente usar las mismas flechas azules de $f$: esto es porque a cada elemento de $B$ en la cadena le llega una flecha azul (y de cada elemento de $A$ sale una flecha). Las figuras \ref{fig:cicl}, \ref{fig:prfin}, y \ref{fig:empa} ilustran la construcción para cada caso. \\
+
+Notar que en todos los casos (aun en los que las cadenas continuan infinitamente) todos los elementos van a quedar apareados por las flechas naranja (y exactamente participan de una flecha). De nuevo: \textit{no queda nadie suelto ni asociado a más de una flecha}. Con esto podemos decir algo así como que en cada caso ``esa partecita de $h$ es biyectiva''. \\
+
+
+% Cicla
+\begin{figure}[!htb]
+\begin{center}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,4) node[anchor=east] (a0) {$g(b_3) = a_1$};
+\filldraw[black] (2,2) node[anchor=east] (a1) {$a_2$};
+\filldraw[black] (2,0) node[anchor=east] (a2) {$a_3$};
+
+\filldraw[black] (5,4) node[anchor=west] (b1) {$b_1$};
+\filldraw[black] (5,2) node[anchor=west] (b2) {$b_2$};
+\filldraw[black] (5,0) node[anchor=west] (b3) {$b_3$};
+
+
+% f
+\draw[<-,red,very thick] (a0) -- (b3.west);
+\draw[<-,red,very thick] (a1) -- (b1);
+\draw[<-,red,very thick] (a2) -- (b2);
+
+% g
+
+\draw[<-,blue,very thick] (b1) -- (a0);
+\draw[<-,blue,very thick] (b2) -- (a1);
+\draw[<-,blue,very thick] (b3) -- (a2);
+
+\end{tikzpicture}
+\hspace{1cm}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,4) node[anchor=east] (a0) {$a_1$};
+\filldraw[black] (2,2) node[anchor=east] (a1) {$a_2$};
+\filldraw[black] (2,0) node[anchor=east] (a2) {$a_3$};
+
+\filldraw[black] (5,4) node[anchor=west] (b1) {$b_1 = h(a_2)$};
+\filldraw[black] (5,2) node[anchor=west] (b2) {$b_2 = h(a_2)$};
+\filldraw[black] (5,0) node[anchor=west] (b3) {$b_3 = h(a_3)$};
+
+
+% f
+\draw[<-,blue,dashed] (a0) -- (b3.west);
+\draw[<-,blue,dashed] (a1) -- (b1);
+\draw[<-,blue,dashed] (a2) -- (b2);
+
+% g
+\draw[<-,orange,very thick] (b1) -- (a0);
+\draw[<-,orange,very thick] (b2) -- (a1);
+\draw[<-,orange,very thick] (b3) -- (a2);
+
+\end{tikzpicture}
+\end{center}
+\caption{Una cadena cíclica y la construccion de ``esa parte'' de $h$ a partir de ella, usando las flechas azules de $f$.}
+\label{fig:cicl}
+\end{figure}
+
+
+\begin{figure}[!htb]
+\begin{center}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,6) node[anchor=east] (a1) {$a_1$};
+\filldraw[black] (2,4) node[anchor=east] (a2) {$a_2$};
+\filldraw[black] (2,2) node[anchor=east] (a3) {$a_3$};
+\filldraw[black] (2,0) node[anchor=east] (a4) {$\cdots$};
+
+\filldraw[black] (5,8) node[anchor=west] (b0) {$\cdots$};
+\filldraw[black] (5,6) node[anchor=west] (b1) {$b_1$};
+\filldraw[black] (5,4) node[anchor=west] (b2) {$b_2$};
+\filldraw[black] (5,2) node[anchor=west] (b3) {$b_3$};
+
+
+% f
+\draw[->,blue,very thick] (a1) -- (b1);
+\draw[->,blue,very thick] (a2) -- (b2);
+\draw[->,blue,very thick] (a3) -- (b3);
+
+% g
+
+\draw[->,red,thick] (b0) -- (a1);
+\draw[->,red,very thick] (b1) -- (a2);
+\draw[->,red,very thick] (b2) -- (a3);
+\draw[->,red,thick] (b3) -- (a4);
+
+\end{tikzpicture}
+\hspace{1cm}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,6) node[anchor=east] (a1) {$a_1$};
+\filldraw[black] (2,4) node[anchor=east] (a2) {$a_2$};
+\filldraw[black] (2,2) node[anchor=east] (a3) {$a_3$};
+\filldraw[black] (2,0) node[anchor=east] (a4) {$\cdots$};
+
+\filldraw[black] (5,8) node[anchor=west] (b0) {$\cdots$};
+\filldraw[black] (5,6) node[anchor=west] (b1) {$b_1 = h(a_1)$};
+\filldraw[black] (5,4) node[anchor=west] (b2) {$b_2 = h(a_2)$};
+\filldraw[black] (5,2) node[anchor=west] (b3) {$b_3 = h(a_3)$};
+
+
+% f
+\draw[->,red,dashed] (b0) -- (a1);
+\draw[->,red,dashed] (b1) -- (a2);
+\draw[->,red,dashed] (b2) -- (a3);
+\draw[->,red,dashed] (b3) -- (a4);
+
+% h
+\draw[->,orange,very thick] (a1) -- (b1);
+\draw[->,orange,very thick] (a2) -- (b2);
+\draw[->,orange,very thick] (a3) -- (b3);
+
+\end{tikzpicture}
+\end{center}
+\caption{Una cadena sin principio ni fin y la construccion de ``esa parte'' de $h$, usando las flechas azules de $f$.}
+\label{fig:prfin}
+\end{figure}
+
+
+
+
+
+\begin{figure}[!htb]
+\begin{center}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,6) node[anchor=east] (a1) {$a_1$};
+\filldraw[black] (2,4) node[anchor=east] (a2) {$a_2$};
+\filldraw[black] (2,2) node[anchor=east] (a3) {$a_3$};
+\filldraw[black] (2,0) node[anchor=east] (a4) {$\cdots$};
+
+\filldraw[black] (5,6) node[anchor=west] (b1) {$b_1$};
+\filldraw[black] (5,4) node[anchor=west] (b2) {$b_2$};
+\filldraw[black] (5,2) node[anchor=west] (b3) {$b_3$};
+
+
+% f
+\draw[->,blue,very thick] (a1) -- (b1);
+\draw[->,blue,very thick] (a2) -- (b2);
+\draw[->,blue,very thick] (a3) -- (b3);
+
+% g
+
+\draw[->,red,very thick] (b1) -- (a2);
+\draw[->,red,very thick] (b2) -- (a3);
+\draw[->,red,very thick] (b3) -- (a4);
+
+\end{tikzpicture}
+\hspace{1cm}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,6) node[anchor=east] (a1) {$a_1$};
+\filldraw[black] (2,4) node[anchor=east] (a2) {$a_2$};
+\filldraw[black] (2,2) node[anchor=east] (a3) {$a_3$};
+\filldraw[black] (2,0) node[anchor=east] (a4) {$\cdots$};
+
+\filldraw[black] (5,6) node[anchor=west] (b1) {$b_1 = h(a_1)$};
+\filldraw[black] (5,4) node[anchor=west] (b2) {$b_2 = h(a_2)$};
+\filldraw[black] (5,2) node[anchor=west] (b3) {$b_3 = h(a_3)$};
+
+
+% f
+\draw[->,red,dashed] (b1) -- (a2);
+\draw[->,red,dashed] (b2) -- (a3);
+\draw[->,red,dashed] (b3) -- (a4);
+
+% h
+\draw[->,orange,very thick] (a1) -- (b1);
+\draw[->,orange,very thick] (a2) -- (b2);
+\draw[->,orange,very thick] (a3) -- (b3);
+
+\end{tikzpicture}
+\end{center}
+\caption{Una cadena que empieza en $A$  y la construccion de ``esa parte'' de $h$, usando las flechas azules de $f$.}
+\label{fig:empa}
+\end{figure}
+
+
+\newpage     
+\underline{Cadenas que empiezan en $B$}. Este caso es distinto: como la cadena empieza en un elemento $b_1 \in B$ \textbf{que no tiene preimagen por $f$}, no podemos usar $f$ para construir $h$: ¡nos quedaría suelto $b_1$! Pero sí podemos usar las flechas de $g$: a todos los elementos de $A$ les llega una flecha roja de $g$, que sale de un único elemento de $B$. Si damos vuelta las flechas de $g$, nos quedan las flechas $A \ra B$ que queremos, y no nos queda nadie suelto. La figura \ref{fig:empb} muestra la construcción de $h$ en este caso: \\
+
+
+\begin{figure}[!htb]
+\begin{center}
+\begin{tikzpicture}[scale=\tikzscale]
+\filldraw[black] (2,4) node[anchor=east] (a1) {$a_1$};
+\filldraw[black] (2,2) node[anchor=east] (a2) {$a_2$};
+\filldraw[black] (2,0) node[anchor=east] (a3) {$a_3$};
+
+\filldraw[black] (5,6) node[anchor=west] (b1) {$b_1$};
+\filldraw[black] (5,4) node[anchor=west] (b2) {$b_2$};
+\filldraw[black] (5,2) node[anchor=west] (b3) {$b_3$};
+\filldraw[black] (5,0) node[anchor=west] (b4) {$\cdots$};
+
+
+% f
+\draw[->,blue,very thick] (a1) -- (b2);
+\draw[->,blue,very thick] (a2) -- (b3);
+\draw[->,blue,very thick] (a3) -- (b4);
+
+% g
+
+\draw[->,red,very thick] (b1) -- (a1);
+\draw[->,red,very thick] (b2) -- (a2);
+\draw[->,red,very thick] (b3) -- (a3);
+
+\end{tikzpicture}
+\hspace{1cm}
+\begin{tikzpicture}[scale = \tikzscale]
+\filldraw[black] (2,4) node[anchor=east] (a1) {$a_1$};
+\filldraw[black] (2,2) node[anchor=east] (a2) {$a_2$};
+\filldraw[black] (2,0) node[anchor=east] (a3) {$a_3$};
+
+\filldraw[black] (5,6) node[anchor=west] (b1) {$b_1 = h(a_1)$};
+\filldraw[black] (5,4) node[anchor=west] (b2) {$b_2 = h(a_2)$};
+\filldraw[black] (5,2) node[anchor=west] (b3) {$b_3 = h(a_3)$};
+\filldraw[black] (5,0) node[anchor=west] (b4) {$\cdots$};
+
+
+% f
+\draw[->,blue,dashed] (a1) -- (b2);
+\draw[->,blue,dashed] (a2) -- (b3);
+\draw[->,blue,dashed] (a3) -- (b4);
+
+
+% h
+\draw[->,orange,very thick] (a1) -- (b1);
+\draw[->,orange,very thick] (a2) -- (b2);
+\draw[->,orange,very thick] (a3) -- (b3);
+
+\end{tikzpicture}
+\end{center}
+\caption{Una cadena que empieza en $B$  y la construccion de ``esa parte'' de $h$, dando vuelta las flechas rojas. }
+\label{fig:empb}
+\end{figure}
+
+
+La función $h$ entonces puede escribirse así:
+
+\[h(a) = \begin{cases} 
+      f(a) & \text{si $a$ pertenece a una cadena cíclica} \\
+      f(a) & \text{si $a$ pertenece a una cadena sin principio ni fin} \\
+      f(a) & \text{si $a$ pertenece a una cadena que empieza en $A$} \\
+      preim_g(a) & \text{si $a$ pertenece a una cadena que empieza en $B$} \\
+   \end{cases}
+\]
+
+Donde $preim_g(a)$ es la preimagen por $g$ de $a$, es decir el único elemento $b_a \in B$ tal que $g(b_a) = a$ (si estamos en ese caso, sabemos que va a existir).\\
+
+Por todo lo que ya dijimos, sabemos que \textbf{la función está bien definida}: cada elemento de $A$ cae en uno y solo uno de los casos, y además siempre existe el elemento al que lo estamos mandando. Además, \textbf{la función es biyectiva}: a cada elemento de $B$ le llega una y solo una flecha naranja de $h$.\\
+
+Construimos una función biyectiva entre $A$ y $B$ solo sabiendo que existen $f : A \ra B$ y $g : B \ra A$ inyectivas, y por lo tanto completamos este boceto de la demostración. $\qed$
+
+\subsubsection*{¿Boceto?}
+Arriba dijimos que lo que hicimos constituye un boceto de la demostración. La demostración completamente formal usando estas ideas es esencialmente la misma, solo que con menos dibujos:
+
+\begin{itemize}
+\item hay que definir y categorizar las cadenas usando la aplicación/composición de funciones en lugar de hablar de ``flechas rojas y azules'',
+\item luego mostrar que las cadenas así definidas particionan a los conjuntos: con esto se puede definir $h$ igual que lo hicimos, separando en casos según el ``tipo de cadena'',
+\item y finalmente, mostrar que $h$ es biyectiva: nosotros lo justificamos con ejemplos y hablando de flechas, pero puede hacerse con las definiciones de inyectividad y sobreyectividad y las características de cada cadena. 
+\end{itemize}
+
+\newpage
+\subsection*{Apéndice}
+\subsubsection*{Qué pasa si $A$ y $B$ no son disjuntos}
+Cuando arrancamos la demostración asumimos que los conjuntos $A$ y $B$ eran disjuntos y dijimos que no perdíamos generalidad, es decir que el teorema sirve igual aunque los conjuntos no sean disjuntos. Veamos por qué.\\
+
+Si $A$ y $B$ no son disjuntos, definimos $A' = A \times \{0\}$ y $B' = B \times \{1\}$. Por ejemplo, si $A = \{1, 2, 3 \}$ y $B = \{ 3, 4, 5 \}$ entonces $A' = \{ (1,0), (2,0), (3,0) \}$ y $B' = \{ (3,1), (4,1), (5,1) \}$. Estos conjuntos sí son disjuntos (nunca dos pares ordenados que tengan $0$ y $1$ en la segunda componente van a ser iguales). \\
+
+Ahora podemos definir las funciones: \\
+\[ F: A' \ra B' \]
+\[ F((a,0)) = (f(a), 1) \]
+
+y:
+
+\[ G: B' \ra A' \]
+\[ G((b,1)) = (g(b), 0) \]
+
+Estas funciones son inyectivas:
+\[ F((a_1, 0)) = F((a_2, 0)) \Ra_{def} (f(a_1), 1) = (f(a_2), 1) \Ra f(a_1) = f(a_2) \underbrace{\Ra}_{f\text{ es iny.}}  a_1 = a_2 \Ra (a_1, 0) = (a_2, 0) \]
+\[ G((b_1,1)) = G((b_2,1)) \Ra_{def} (g(b_1), 0) = (g(b_2), 0) \Ra g(b_1) = g(b_2) \underbrace{\Ra}_{g\text{ es iny.}}  b_1 = b_2 \Ra (b_1, 1) = (b_2, 1) \]
+ 
+
+Entonces tenemos dos conjuntos $A'$ y $B'$ disjuntos y funciones inyectivas entre ellos: entonces podemos conseguir una función biyectiva $H : A' \ra B'$ usando todo lo que ya hicimos. Pero usando $H$ podemos construir una función biyectiva entre $A$ y $B$, los conjuntos originales. Simplemente obtenemos la primera componente de la función $H$:
+
+\[ h : A \ra B \]
+\[ h(a) = \beta \text{, donde $H((a, 0)) = (\beta, 1)$} \] \\
+
+Así, para todo $a \in A$ se cumple $H((a,0)) = (h(a), 1)$. Tenemos que $h$ es inyectiva:
+
+\[ h(a_1) = h(a_2) \Ra (h(a_1), 1) = (h(a_2), 1) \underbrace{\Ra}_{def.\ h} H((a_1, 0)) = H((a_2, 0)) \underbrace{\Ra}_{H\ iny.} (a_1, 0) = (a_2, 0) \Ra a_1 = a_2  \]
+ 
+ 
+Y $h$ es sobreyectiva: si $b \in B$, entonces $(b, 1) \in B'$ y entonces sabemos que existe $(a, 0) \in A'$ tal que $H((a,0)) = (b,1)$ porque $H$ es sobreyectiva. Pero entonces $h(a) = b$ por definición de $h$. 
+\\
+
+Entonces $h: A \ra B$ es biyectiva, y queda demostrado lo que queríamos. \qed
+
+\begin{comment}
+
+\subsection*{El caso finito}
+Cuando $A$ y $B$ son conjuntos finitos la demostración es simple, porque podemos usar sobre esos conjuntos la noción de ``cantidad de elementos''. Aunque después vamos a demostrar el teorema en general, demostremos este caso particular: \\
+
+Sean $A = \{ a_1, ..., a_k \}$ y $B = \{ b_1, \cdots, b_r \}$ dos conjuntos finitos, y $f: A \rightarrow B$ y $g : B \rightarrow A$ ambas inyectivas. $A$ tiene $k$ elementos y $B$ tiene $r$ elementos. Notemos que acá $k$ y $r$ \textbf{no son numeros cardinales sino realmente numeros naturales}: estamos hablando de cuántos elementos hay, contandolos con numeros naturales, podemos hacerlo porque los conjuntos son finitos.\\
+
+Como $f$ es inyectiva ($x \neq y \Rightarrow f(x) \neq f(y)$), el conjunto \[f(A) = \{f(a_1), f(a_2), \cdots f(a_k) \}\] tiene $k$ elementos. Pero $f(A) \subset B$, entonces $B$ tiene al menos esos $k$ elementos, y así $k \le r$ (de nuevo, cuidado: ¡este es el $\le$ de los números naturales y no el $\preceq$ de cardinales!). De la misma manera, podemos ver que $g(B) = \{ g(b_1) \cdots g(b_r) \}$ tiene $r$ elementos y está incluido en $A$, entonces $A$ tiene al menos $r$ elementos, es decir $r \le k$. Como $r \le k$ y $k \le r$ entonces $r = k$ (por ultima vez: esto vale porque estamos usando numeros naturales y la relación de orden entre ellos, que ya sabemos que es antisimétrica). \\
+
+Queda construir la función biyectiva, pero esto es fácil: acabamos de ver que $r = k$, entonces podemos escribir $B = \{ b_1, \cdots, b_k \}$, y así $h: A \rightarrow B$ tal que $h(a_i) = b_i$ es biyectiva.
+
+\end{comment}
+
+
+
+\end{document}
+
+
+
+
+

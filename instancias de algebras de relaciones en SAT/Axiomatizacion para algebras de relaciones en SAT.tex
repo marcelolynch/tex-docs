@@ -1,0 +1,201 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{ mathrsfs }
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{ dsfont }
+\usepackage{amssymb}
+\usepackage{titlecaps}
+
+\usepackage{titlecaps}% http://ctan.org/pkg/titlecaps
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{ITBA}
+\fancyhead[L]{Marcelo Lynch}
+\fancyfoot[C]{\thepage}
+
+ \theoremstyle{definition}
+\newtheorem*{fact}{Fact}
+\newtheorem*{formula}{Fórmula}
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\G}{\Gamma}
+\renewcommand{\S}{\Sigma}
+
+\newenvironment{modenumerate}
+  {\enumerate\setupmodenumerate}
+  {\endenumerate}
+
+\newif\ifmoditem
+\newcommand{\setupmodenumerate}{%
+  \global\moditemfalse
+  \let\origmakelabel\makelabel
+  \def\moditem##1{\global\moditemtrue\def\mesymbol{##1}\item}%
+  \def\makelabel##1{%
+    \origmakelabel{##1\ifmoditem\rlap{\mesymbol}\fi\enspace}%
+    \global\moditemfalse}%
+}
+
+
+\newcommand\restr[2]{{% we make the whole thing an ordinary symbol
+  \left.\kern-\nulldelimiterspace % automatically resize the bar with \right
+  #1 % the function
+  \vphantom{\big|} % pretend it's a little taller at normal size
+  \right|_{#2} % this is the delimiter
+  }}
+
+
+\begin{document}
+\begin{center}
+\subsection*{Buscando modelos de Algebra de relaciones con SAT: una axiomatización para álgebras de relaciones finitas}
+
+\end{center}
+\subsection*{Ejemplo: orden total no acotado}
+\subsubsection*{ Modelado en Alloy }
+Se puede modelar el hecho de que $R$ es un orden total sin un maximo en Alloy utilizando formulas que versan solo sobre la relacion $R$, la identidad y la relación universal (Top). Obviamente Alloy no encuentra un modelo pues no hay modelos finitos.
+
+\begin{verbatim}
+    sig A {
+    	R: set A
+    }
+    
+    fun Top[] : set A->A { A->A }
+    fun Dom[r: set A->A] : set A->A { r.~r & iden }
+    
+    -- Orden total
+    fact { iden in R } -- Reflexiva
+    fact { R & ~R in iden } -- Antimetrica
+    fact { R.R in R } -- Transitiva
+    fact { ~R + R = Top[] } -- Total
+
+    -- Predicado: "no hay maximo"
+    run { no iden - Dom[R - iden] } -- No encuentra ejemplos
+\end{verbatim}
+
+\subsection*{Traduciendo las fórmulas a la lógica proposicional interpretada como algebra de relaciones}
+
+En lo que sigue: 
+\begin{itemize}
+\item $At$ denota al conjunto finito de átomos. 
+\item Si $i$ es un átomo y $R$ una relación, $p_{i,R}$ es una variable proposicional que se puede leer $i \in R$ 
+\item Si $a$, $b$, $c$ son átomos $c_{a,b,c}$ es una variable proposicional que se puede leer $a;b \ge c$ 
+\item La relación $Id$ siempre existe como la identidad (en los facts es $iden$) 
+\item $Top$ es la relacion universal 
+\item Podemos indicar $i \in \sim R$ con $p_{\sim i, R}$
+\end{itemize}
+\vspace{10px}
+Las fórmulas que se presentan intentan de estar lo más cerca a lo que se podría generar automáticamente (de la forma más "naïve" posible excepto en un caso, supongo) a partir de las sentencias Alloy.
+\begin{fact} $iden$ in $R$ (reflexividad)
+\end{fact} 
+
+\begin{formula} 
+\[
+    \bigwedge_{i\in At} (p_{i,Id} \rightarrow p_{i,R})
+\]
+\end{formula}
+
+\begin{fact}
+$R\ \& \sim R$ in $iden$ (antisimetría)
+\end{fact}
+\begin{formula}
+\[
+    \bigwedge_{i \in At} ((p_{i,R} \land p_{\sim i, R}) \rightarrow p_{i, Id})
+\]
+\end{formula}
+\begin{fact}
+$R.R$ in $R$ (transitividad)
+\end{fact}
+\begin{formula} En esta fórmula aparece la expresión para la composición relacional. Un problema es que este tipo de formulas (disyuncion de conjunciones) pueden explotar exponencialmente en tamaño al pasar a CNF. ¿Es aceptable usar traducciones equisatisfacibles en lugar de equivalentes?
+\[
+    \bigwedge_{i \in At} [(\underbrace{\bigvee_{j,k \in At} p_{j,R} \land p_{k,R} \land c_{jki})}_{i \in R;R } \rightarrow p_{i, R}]
+\]
+\end{formula}
+\begin{fact}
+$R + \sim R$ = $univ$ (totalidad)
+\end{fact}
+\begin{formula} La formula que sigue no tiene la pinta de una 'traduccion automatica' de una formula de igualdad $R1 = R2$, pero podría uno imaginarse que se puede interpretar $R = univ$ con una semantica especial ("R es la suma de todos los atomos") que resulte en algo así:
+\[
+    \bigwedge_{i \in At} p_{i, R} \vee p_{\sim i, R}
+\]
+\end{formula} 
+\begin{fact}
+no $iden - Dom(R - iden)$ ("no hay maximo para R": aquí $Dom(R) = R.\sim R\ \&\ iden)$
+\end{fact}
+\begin{formula} Esto supone que la semántica para "no R" es la conjuncion sobre todos los atomos negando su pertenencia a R.
+\[
+    \bigwedge_{i \in At} \lnot (p_{i,Id} \land \lnot \bigvee_{j,k \in At} [ \underbrace{p_{j,R} \land \lnot p_{j, Id}}_{j \in R - Id} \land \underbrace{p_{\sim k,R} \land \lnot p_{\sim k, Id}}_{k \in \sim (R - Id)} \land \ c_{jki} ])
+\]
+\end{formula}
+
+\subsubsection*{Observaciones extras}
+Hay que notar que además de estas fórmulas hace falta codificar otras formulas que le den marco de algebra relacional a lo demás. Los axiomas del álgebra booleana se cumplen gratis por la forma en la que traducimos la unión e intersección a la logica. Para el operador relacional tenemos que basta con que se cumpla:  
+\begin{enumerate}
+    \item $x = x;Id$   
+    \item $x;y \cdot z \neq 0 \Leftrightarrow \sim x ; z \cdot y \neq 0$ 
+    \item $x;y \cdot z \neq 0 \Leftrightarrow z ; \sim y \cdot x \neq 0$ 
+    \item $v;x \cdot w;y \neq 0 \Leftrightarrow \sim v;w \cdot x;\sim y \neq 0$
+\end{enumerate}
+
+Para el primer axioma podemos agregar, por cada símbolo de relación $R$ que tengamos, la fórmula:
+\[
+    \bigwedge_{i \in At} [(\underbrace{\bigvee_{j,k \in At} p_{j,R} \land p_{k,I} \land c_{jki})}_{i \in R;Id } \leftrightarrow p_{i, R}]
+\]
+
+Los axiomas (2) a (4) son equivalentes a decir que para todos $v,w,x,y,z$ \textbf{átomos}:
+
+\begin{modenumerate}
+\setcounter{enumi}{1}
+    \moditem{*} $x;y \geq z \Leftrightarrow \sim x ; z \geq y$ 
+    \moditem{*} $x;y \geq z \Leftrightarrow z ; \sim y \geq x$ 
+    \moditem{*} $\exists a. (v;x \geq a \land w;y \geq a) \Leftrightarrow \exists a. (\sim v;w \geq a \land x;\sim y \geq a$)
+\end{modenumerate}
+
+Veamos por ejemplo que (2) es equivalente a (2*): \\
+\\
+$(\Rightarrow)$ Se cumple (2) para todos los elementos del álgebra, en particular para todos los átomos. Además notemos que si $a, b, c$ son átomos:
+\[ a;b \cdot c \neq 0 \Rightarrow (a;b \geq c) \vee (c \geq a;b) \Rightarrow (a;b \geq c) \vee (c = a;b)  \Rightarrow (a;b \geq c) \].
+
+Entonces, sean $x,y,z$ átomos.
+\[ 
+    x;y \geq z \iff x;y \cdot z \neq 0 \iff \sim x;z \cdot y \neq 0 \iff \sim x;z \geq y
+\]
+\\ 
+\\
+$(\Leftarrow)$. Sean $X, Y, Z$ elementos cualesquiera del álgebra.
+$X;Y \cdot Z \neq 0$ significa, por aditividad completa, que existen átomos $x \leq X$, $y \leq Y$, $z \leq Z$ tales que $x;y \cdot z \neq 0$.
+Luego 
+\[ X;Y \cdot Z \neq 0 \iff x;y\cdot z \neq 0 \iff x;y \geq z \iff \sim x ; z \geq y \iff \sim x ; z \cdot y \neq 0 \iff \sim X ; Z \cdot Y \neq 0\] 
+\\
+Donde la última equivalencia sale notando (de nuevo por aditividad completa) \[\sim X = \sum_{x \in At,\ x \leq X} \sim x \]
+\\
+\\
+Estas propiedades las podemos traducir a fórmulas de la lógica proposicional en función de las variables de ciclos:
+
+\begin{formula} $x;y \geq z \Leftrightarrow \sim x ; z \geq y$
+\[ 
+    c_{x,y,z} \leftrightarrow c_{\sim x, z, y}
+\]
+\end{formula}
+\begin{formula} $x;y \geq z \Leftrightarrow z ; \sim y \geq x$
+\[ 
+    c_{x,y,z} \leftrightarrow c_{z,\sim y,x}
+\]
+\end{formula}
+
+\begin{formula} $\exists a. (v;x \geq a \land w;y \geq a) \Leftrightarrow \exists a. (\sim v;w \geq a \land x;\sim y \geq a$)
+\[
+    (\bigvee_{a \in At} (c_{v,x,a} \land c_{w,y,a})) \leftrightarrow (\bigvee_{a \in At} (c_{\sim v,w,a} \land c_{x,\sim y,a}))
+\] 
+\end{formula}
+
+
+\end{document}
+
+
+
+
+

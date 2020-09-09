@@ -1,0 +1,138 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{ mathrsfs }
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{ dsfont }
+\usepackage{amssymb}
+\newtheorem*{ejercicio}{Ejercicio}
+\newtheorem*{propiedad}{Propiedad}
+
+
+
+\title{Algunas propiedades del álgebra de cardinales}
+\author{Marcelo M. Lynch \\ Lógica Computacional - ITBA}
+\date{}
+
+\begin{document}
+\maketitle
+Decimos que dos conjuntos $A$ y $B$ son coordinables si existe una función biyectiva entre ellos. Notamos $A \sim B$ ($\sim$ es una relación de equivalencia). Decimos $\#A = \#B$ si $A \sim B$.
+Decimos que $\#A \le \#B$ si existe una función $f: A \rightarrow B$ inyectiva.\newline
+
+En lo que sigue, $A$, $B$, $C$ son conjuntos disjuntos dos a dos (necesitamos que sean disjuntos cuando utilizamos la unión, pero de todas formas no perdemos generalidad pidiendo esto en otros casos) y $a = \#A$, $b = \#B$, $c = \#C$. \newline 
+
+
+Recordemos que con $a + b$ se denota al cardinal del conjunto $A \cup B$, con con $ab$ se denota al cardinal del conjunto $A \times B$, y con $a^b$ el cardinal del conjunto de funciones con dominio en $B$ y codominio en $A$ (llamamos a este conjunto $A^B$). \newline
+
+\begin{propiedad}\fbox{$a(b+c) = ab + ac$}
+\end{propiedad}
+\begin{proof}[Demostración]
+Por propiedades de conjuntos, sabemos: \begin{center} $A \times (B\cup C) = (A\times B) \cup (A\times C)$ \end{center}
+Luego, por la reflexividad de $\sim$ tenemos $A \times (B\cup C) \sim (A\times B) \cup (A\times C$).
+\end{proof}
+
+\begin{propiedad}$a^{b+c} = a^ba^c$
+\end{propiedad}
+\begin{proof}[Demostración]
+Llamamos: 
+ \[ X = \#\{ f: B \cup C \rightarrow A\text{ : $f$ es función}\} \] 
+\[ Y = \#\{ (f,g) / \text{$f: B \rightarrow A$ es función y $g : C \rightarrow A$ es función}\} \]
+
+Notemos que $\#X = a^{b+c}$ y $\#Y = a^ba^c$. Definimos entonces una biyeccion:
+
+\begin{align*}
+\Phi :  X \rightarrow Y \\
+\Phi(f) = (f|_B, f|_C)
+\end{align*}
+\newline
+i. $\Phi$ es inyectiva: Sean $f,g \in X$, tenemos $\Phi(f) = \Phi(g) \Rightarrow (f|_B, f|_C) = (g|_B, g|_C)$ luego las imágenes de $f$ y $g$ coinciden en todo su dominio ($B \cup C$), es decir, $f = g$. \newline 
+\newpage ii. $\Phi$ es sobreyectiva: Sea $(g,h) \in Y$, defino:
+\begin{center}$f:\ B\cup C \rightarrow A$ \end{center}
+\[ f(t) =
+  \begin{cases}
+    g(t)       & \quad \text{si } t \in B\\
+    h(t)  & \quad \text{si } t \in C\\
+  \end{cases}
+\]
+$f \in X$, y además $\Phi(f) = (g,h)$. Luego $\Phi$ es sobreyectiva.
+\newline
+Entonces $\Phi$ es biyectiva, es decir, $X \sim Y$, o sea $a^{b+c} = a^ba^c$ \newline
+
+\end{proof}
+\begin{propiedad}\fbox{$(a^b)^c = a^{bc}$}
+\end{propiedad}
+\begin{proof}[Demostración]
+Queremos ver $(A^B)^C \sim A^{B\times C}$. Recordemos que en $(A^B)^C$ tenemos funciones de $C \rightarrow \{$funciones $B \rightarrow A\}$, y en $A^{B\times C}$ tenemos funciones de $B \times C \rightarrow A$.
+\newline
+Definimos entonces la función $\Omega: A^{B\times C} \rightarrow (A^B)^C$ según: \\
+
+\begin{align*}
+\Omega(g) =& f_g: C \rightarrow A^B \\
+& f_g(c) = h_{g,c}: B \rightarrow A \\ & \qquad \quad h_{g,c}(x) = g(x,c)
+\end{align*}
+Para entender $\Omega$ se puede pensar que con el argumento de $f_g$ se "fija" el segundo argumento de $g$ (un elemento del conjunto $C$), y se devuelve una función $h_{g,c}$ que "fija" el primero (un elemento de $B$): es decir, al evaluar $h_{g,c}$ en un $x\in B$ se está evaluando la función $g$ que es parámetro de $\Omega$, con el elemento $c$ como segundo parámetro, y el elemento $x$ como primer parámetro.
+\newline
+
+Probemos la inyectividad de $\Omega$ mostrando que si $\alpha, \beta \in A^{B \times C}$ con $\alpha \neq \beta$ entonces $\Omega(\alpha) \neq \Omega(\beta)$. Si $\alpha \neq \beta$, por la definición de igualdad de funciones debe existir un elemento $(b_0, c_0) \in B \times C$ tal que $\alpha(b_0, c_0) \neq \beta(b_0, c_0)$. \newline \break Pero por como definimos $\Omega$, tenemos $\alpha(b_0, c_0) = \Omega(\alpha)(c_0)(b_0)$ (¿se ve que primero se fija $c_0$ y luego $b_0$, evaluando $\alpha$ con esos parámetros?) y $\beta(b_0, c_0) = \Omega(\beta)(c_0)(b_0)$. \newline \newline
+Pero así $\Omega(\alpha)(c_0)(b_0) \neq \Omega(\beta)(c_0)(b_0)$ es decir, $h_{\alpha,c_0}(b_0) \neq h_{\beta, c_0}(b_0)$ \newline \newline
+Entonces, por igualdad de funciones: $h_{\alpha,c_0} \neq h_{\beta, c_0}$ (ya que difieren en $b_0$). \newline \newline
+Pero $h_{\alpha,c_0} = f_\alpha(c_0)$, y $h_{\beta,c_0} = f_\beta(c_0)$, luego, de la misma manera, por igualdad de funciones es $f_\alpha \neq f_\beta$. \newline \newline
+Como $\Omega(\alpha) = f_\alpha$ y $\Omega(\beta) = f_\beta$, entonces $\Omega(\alpha) \neq \Omega(\beta)$, que era lo que queríamos ver. Luego $\Omega$ es inyectiva.\newline
+
+Veamos que $\Omega$ es sobreyectiva. Sea $\gamma \in (A^B)^C$, definimos $g: B\times C \rightarrow A : g(b,c) = \gamma(c)(b)$. Para cualquier $c_0 \in C$, dado cualquier $b_0 \in B$ es $\Omega(g)(c_0)(b_0) = g(b_0,c_0) = \gamma(c_0)(b_0) \Rightarrow$ $\Omega(g)(c) = \gamma(c) \ \forall c \in C$, luego $\Omega(g) = \gamma$. Concluimos que $\Omega$ es sobreyectiva.
+\newline \newline
+Entonces $\Omega$ es biyectiva y así $(A^B)^C \sim A^{B\times C}$. \newline
+\end{proof}
+
+\begin{propiedad}\fbox{$b\le c \Rightarrow b^a \le c^a$}
+\end{propiedad}
+\begin{proof}[Demostración]
+Como $b \le c$ existe $g: B \rightarrow C$ inyectiva. \newline Definimos $\Psi : B^A \rightarrow C^A$ según:
+\begin{align*}
+\Psi(f) =& g \circ f: A \rightarrow C \\
+& g \circ f(x) = g(f(x))
+\end{align*}
+Queremos ver que $\Psi$ es inyectiva: $\Psi(f_1) = \Psi(f_2) \Rightarrow g(f_1(x)) = g(f_2(x))$, $\forall x \in A$. Como $g$ es inyectiva, esto implica $f_1(x) = f_2(x)$. Como esto se cumple para cualquier $x \in A$, tenemos $f_1 = f_2$. Luego $\Psi$ es inyectiva, y $b^a \le c^a$.
+\end{proof}
+
+\begin{propiedad}\fbox{$b\le c \Rightarrow a^b \le a^c$}
+\end{propiedad}
+\begin{proof}[Demostración]
+
+Como $b \le c$ existe $g: B \rightarrow C$ inyectiva. \newline Definimos $f: B \rightarrow Im$($g$) / $f(x) = g(x)$. La funcion $f$ es biyectiva, por como esta definida (ya que $g$ es inyectiva, y porque siendo el codominio la imagen de $g$ se garantiza la sobreyectividad), luego existe $f^{-1}: Im(g) \rightarrow B$.  Definimos $\Psi : A^B \rightarrow A^C$ según:
+
+\begin{align*}
+\Psi(\gamma) =& h: C \rightarrow A \\
+& h(x) = \begin{cases}
+    \gamma \circ f^{-1}(x)       & \quad \text{si } x \in Im(g)\\
+    a_0 \in A  & \quad \text{si } x \notin Im(g)\\
+  \end{cases}
+\end{align*}
+Donde $a_0$ es un elemento fijo cualquiera de $A$.\newline \newline
+Veamos que $\Psi$ es inyectiva. Tomemos $\alpha, \beta \in A^B$. Si $\Psi(\alpha) = \Psi(\beta)$, por igualdad de funciones tenemos que $\forall x \in C$ se cumple $\Psi(\alpha)(x) = \Psi(\beta)(x)$. \newline \newline En particular, $\forall x \in Im(g)$, $\alpha \circ f^{-1}(x)  = \beta \circ f^{-1}(x) $, con $x = f(y)$ para algún $y \in B$ por ser $x$ parte de la imagen de $g$. (Notemos que todo $x \in Im(g)$ tiene un único $y\in B$ tal que $x = f(y)$ por ser $f$ biyectiva, y que existe $f(y)$ para todo $y \in B$ por ser $f$ función).  \newline \newline Luego $\forall y \in B$,  $\alpha(f^{-1}(f(y)))  = \beta(f^{-1}(f(y))) \Rightarrow \forall y \in B$, $\alpha(y)  = \beta(y) \Rightarrow \alpha = \beta$, por igualdad de funciones. Luego $\Psi$ es inyectiva, y así $a^b \le a^c$.
+\end{proof}
+\newpage
+\begin{propiedad}\fbox{$b\le c \Rightarrow ab \le ac$}
+\end{propiedad}
+\begin{proof}[Demostración] 
+Como $b \le c$ existe $g: B \rightarrow C$ inyectiva. \newline \newline Definimos $f: A \times B \rightarrow A \times C$ / $f(x,y) = (x, g(y))$ \newline \newline
+$f$ es inyectiva: $f(x,y) = f(z,w) \Rightarrow (x, g(y)) = (z, g(w)) \Rightarrow x = z \land g(y) = g(w) \Rightarrow x = z \land y = w$, por ser $g$ inyectiva. Entonces $(x,y) = (z,w)$. \newline Entonces $f$ es inyectiva, y probamos $ab \le ac$\newline
+
+\end{proof}
+\begin{propiedad}\fbox{$(ab)^c = a^cb^c$}
+\end{propiedad}
+\begin{proof}[Demostración] 
+ Definimos $\Phi : A^C \times B^C \rightarrow (A\times B)^C$ según:
+\begin{align*}
+\Phi(\alpha, \beta) =& \gamma: C \rightarrow A\times B \\
+& \gamma(x) = (\alpha(x), \beta(x))
+\end{align*}
+
+Vemos la inyectividad de $\Phi$: \newline $\Phi(\alpha_1, \alpha_2) = \Phi(\beta_1, \beta_2) \Rightarrow \ \forall x \in C,\  (\alpha_1(x), \alpha_2(x)) = (\beta_1(x), \beta_2(x)) \Rightarrow \alpha_1 = \beta_1 \ \land \ \alpha_2 = \beta_2 \Rightarrow (\alpha_1, \alpha_2) = (\beta_1, \beta_2)$.
+\newline \newline
+Veamos la sobreyectividad de $\Phi$: \newline Sea $\gamma \in (A \times B)^C$, tenemos $\gamma(x) = (\gamma_1(x), \gamma_2(x))$. Definimos $f: C \rightarrow A$ / $f(x) = \gamma_1(x)$ y $g: C \rightarrow B$ / $g(x) = \gamma_2(x)$. \newline \newline $(f,g) \in A^C \times B^C$, y $\Phi(f,g) = \gamma$. Por lo tanto $\Phi$ es sobreyectiva. 
+\newline \newline Luego $\Phi$ es biyectiva y $A^C \times B^C \sim (A\times B)^C$, o sea $a^cb^c = (ab)^c$.
+
+\end{proof}
+
+\end{document}

@@ -1,0 +1,107 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{ mathrsfs }
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{ dsfont }
+\usepackage{amssymb}
+\newtheorem*{ejercicio}{Ejercicio}
+\newtheorem*{proposicion}{Proposición}
+
+
+
+
+\title{Unos ejercicios de familias de conjuntos}
+\author{M. Lynch}
+\date{Agosto de 2014 - Álgebra - ITBA}
+
+\begin{document}
+\maketitle
+
+\begin{ejercicio}
+Sea $A_p = \{ k \in \mathbb{N}$ : $p$ divide a $k\}$;  $\mathscr{L} = \{A_p \in \mathcal{P}(\mathbb{N})$ : $p$ es primo $\}$. Hallar $\bigcup\mathscr{L}$ y $\bigcap\mathscr{L}$.
+\end{ejercicio}
+\begin{proposicion}
+$\bigcup\mathscr{L} = \mathbb{N} \setminus \{ 1 \}$.
+\end{proposicion}
+\begin{proof}[Demostración]
+$\forall p$ primo, $1\notin A_p$, pues solamente 1 divide a 1 (en $\mathbb{N}$) y $1$ no es primo. Es decir: $1 \in A_n \Rightarrow n = 1$, pero $A_1 \notin \mathscr{L}$, luego $1 \notin \bigcup\mathscr{L}$.\\ \\
+Ahora bien, $x \in \mathbb{N} \setminus \{1\} \Rightarrow x$ es primo o $x$ es compuesto. Si $x$ es primo, $x \in A_x$, y $A_x \in \mathscr{L}$, luego $x \in \bigcup\mathscr{L}$. Si $x$ es compuesto, tiene al menos un divisor primo $y$, por lo tanto $x \in A_y$, y como $A_y \in \mathscr{L}$, luego $x \in \bigcup\mathscr{L}$. Tenemos pues que $x \in \mathbb{N} \setminus \{1\} \Rightarrow x \in \bigcup\mathscr{L}$, es decir, $\mathbb{N} \setminus \{1\} \subset \bigcup\mathscr{L}$. \\ Como $1 \notin \bigcup\mathscr{L}$, y $\bigcup\mathscr{L} \subset \mathbb{N}$ pues $A_p \in \mathcal{P}(\mathbb{N})$, entonces $\bigcup\mathscr{L} \subset \mathbb{N} \setminus \{1\}$. \\ \\ Por lo tanto \fbox{$\bigcup\mathscr{L} = \mathbb{N} \setminus \{1\}$}.
+\end{proof}
+
+\begin{proposicion}
+$\bigcap\mathscr{L} = \emptyset$.
+\end{proposicion}
+
+\begin{proof}[Demostración]
+Para probarlo, veamos que $\forall n \in \mathbb{N}$ existe $p$ primo tal que $n\notin A_p$. Si para cualquier elemento de $\mathbb{N}$ encontramos un $A_p$ que no lo contiene, entonces ningún elemento está en la intersección, luego la intersección es el conjunto vacío (hablamos de elementos de $\mathbb{N}$ porque forzosamente $\bigcap\mathscr{L} \subset \mathbb{N})$.\\ \\
+Sea $a\in \mathbb{N}$, tomemos un $q$ primo tal que $q > a$. Como $a$ y $q$ son naturales, $q > a \Rightarrow a$ no es divisible por $q$. Pero entonces $a \notin A_q$. Entonces $a \notin \bigcap\mathscr{L}$. \\ Luego \fbox{$\bigcap\mathscr{L} = \emptyset$}\\
+\end{proof}
+
+\begin{ejercicio}
+Hallar $\bigcup\mathscr{L}$ y $\bigcap\mathscr{L}$, si $\mathscr{L}$ es la familia de subconjuntos cuyos miembros son los intervalos de la forma $I_n = (-\frac{1}{n}, \frac{1}{n})$, con $n \in \mathbb{N}$.
+\end{ejercicio}
+\begin{proposicion}
+$\bigcup\mathscr{L} = (-1, 1)$.
+\end{proposicion}
+\begin{proof}[Demostración] Probemos la doble inclusión \\ \\
+( $\supset$ )   $1 \in \mathbb{N} \Rightarrow I_1 \in \mathscr{L} \Rightarrow (-\frac{1}{1}, \frac{1}{1}) \in \mathscr{L} \Rightarrow (-1, 1) \subset \bigcup\mathscr{L}$.  \\ \\
+( $\subset$ ) $x \in \bigcup\mathscr{L} \Rightarrow x \in I_m$, para algún $m$ natural. Entonces $-\frac{1}{m} < x < \frac{1}{m}$. Pero como $m \ge 1$, tenemos que  $-1 \le -\frac{1}{m} < x < \frac{1}{m} \le 1$. Entonces $-1 < x < 1$, luego $x \in (1, 1)$. Entonces $\bigcup\mathscr{L} \subset (-1,1)$, y por lo tanto concluimos que \fbox{$\bigcup\mathscr{L} = (-1,1)$}.
+\end{proof}
+
+
+
+\begin{proposicion}
+$\bigcap\mathscr{L} = \{0\}$.
+\end{proposicion}
+
+\begin{proof}[Demostración]
+Como $\forall n \in \mathbb{N}$ se cumple $-\frac{1}{n} < 0 < \frac{1}{n}$, entonces $\forall n$, $0 \in I_n$. Entonces $0 \in \bigcap\mathscr{L}$. \\ Veamos ahora que si $x \ne 0 \Rightarrow$ existe $m \in \mathbb{N}$ tal que $x \notin I_m$, es decir, que $x \notin \bigcap\mathscr{L}$
+\\ \\
+Caso 1: $x > 0$: \\
+Sea $y \in \mathbb{N}: y > \frac{1}{x}$ ($y$ existe por ser $\mathbb{R}$ arquimediano).\\ $y > \frac{1}{x} \Rightarrow \frac{1}{y} < x$. Luego $x$ no pertenece a $I_y = (-\frac{1}{y}, \frac{1}{y})$, pues si así fuera, $-\frac{1}{y} < x < \frac{1}{y}$. Pero $I_y \in \mathscr{L}$, luego $x\notin \bigcap\mathscr{L}$ \\\\
+Caso 2: $x < 0$: \\
+Tomemos $z \in \mathbb{N}: z > -\frac{1}{x}$. $z > -\frac{1}{x} \Rightarrow x < -\frac{1}{z}$. Pero entonces $x \notin I_z = (-\frac{1}{z}, \frac{1}{z})$, y como $I_z \in \mathscr{L}$, es $x \notin \bigcap\mathscr{L}$. \\ \\
+Resumiendo, vimos que $x = 0 \Rightarrow x \in \bigcap\mathscr{L}$, y $x \ne 0 \Rightarrow x \notin \bigcap\mathscr{L}$. \\ Luego \fbox{$\bigcap\mathscr{L} = \{0\}$}. \\ \\
+\end{proof}
+
+\begin{ejercicio}
+Hallar $\bigcup\mathscr{L}$ y $\bigcap\mathscr{L}$, siendo  $\mathscr{L} = \{L_m \in \mathcal{P}(\mathbb{R}^2) / m \in \mathbb{R}\}$\\
+Con $L_m = \{(x,y) \in \mathbb{R}^2 / mx - 1 \le y \le mx + 1\}$.
+\end{ejercicio}
+\begin{proposicion}
+$\bigcup\mathscr{L} = \mathbb{R}^2 \setminus A$, siendo $A = \{(0,y) \in  \mathbb{R}^2$ / $ |y| > 1 \}$.
+\end{proposicion}
+
+\begin{proof}[Demostración]
+i) Sea $(a,b) \in A$, veamos que $\forall m \in \mathbb{R}\ (a,b) \notin L_m$. Es decir, $(a,b) \notin \bigcup\mathscr{L}$. Supongamos que existe $(a,b) \in A$ y $m \in \mathbb{R}$ tal que $(a,b) \in L_m$. Como $(a,b) \in L_m$, tenemos $ma - 1 \le b \le ma + 1$. Pero $(a,b) \in A$, entonces $a = 0$, luego $-1 \le b \le 1$, absurdo pues $|b| > 1$, por ser $(a,b) \in A$. El absurdo viene de suponer que existe $m \in \mathbb{R}$ tal que $(a,b) \in L_m$, luego esto no puede pasar. Entonces $(a,b) \notin \bigcup\mathscr{L}$. \\ \\
+ii) Veamos ahora que si $(a,b) \notin A$, entonces existe $m \in \mathbb{R}$ tal que $(a,b) \in L_m$. Sea $(a,b) \notin A$, tenemos que $a \ne 0$ o $|b| \le 1$ \\ \\
+Caso 1) $a = 0$. Tomemos cualquier $m \in \mathbb{R}$. \\
+
+Tenemos $|b| \le 1 \Rightarrow -1 \le b \le 1 \Rightarrow ma - 1 \le b \le ma + 1 \Rightarrow (a,b) \in L_m$. Entonces $(a,b) \in L_m$ $\forall m \in \mathbb{R}$ (una condición más fuerte de la que necesitabamos, que era que estuviera en \textit{algún} $L_m$: esto nos servirá más adelante). Pero entonces $(a,b) \in \bigcup\mathscr{L}$. 
+\\ \\ \\ \\
+
+Caso 2) $a \ne 0$: \\ \\
+Entonces $\frac{b}{a} \in \mathbb{R}$, y veamos que $(a,b) \in L_\frac{b}{a}$:\\ $ b - 1 \le b \le b + 1 \Rightarrow \frac{b}{a}a - 1 \le b \le \frac{b}{a}a + 1 \Rightarrow (a,b) \in L_\frac{b}{a}$ \\ Y como $L_\frac{b}{a} \in \mathscr{L}$, entonces $(a,b) \in \bigcup\mathscr{L}$ \\ \\
+Resumiendo, vimos que si $(a,b) \in A$ entonces $(a,b) \notin \bigcup\mathscr{L}$, y que si $(a,b) \notin A$ entonces $(a,b) \in \bigcup\mathscr{L}$. Entonces efectivamente \fbox{$\bigcup\mathscr{L} = \mathbb{R}^2 \setminus A$}
+\end{proof}
+
+\begin{proposicion}
+$\bigcap\mathscr{L} = B$, siendo $B = \{(0,y) \in  \mathbb{R}^2$ / $ |y| \le 1 \}$.
+\end{proposicion}
+
+\begin{proof}[Demostración]
+Ya vimos en el Caso 1 del apartado (ii) de la demostración anterior que si $(a,b) \in B$ entonces para todo $m \in \mathbb{R}$ se cumple $(x,y) \in L_m$. Esto quiere decir que $(a,b) \in B \Rightarrow (a,b) \in \bigcap\mathscr{L}$ \\ \\ Veamos para completar la demostración que si $(a,b) \notin B$ podemos encontrar un $m \in \mathbb{R}$ tal que $(a,b) \notin L_m$: esto es, $(a,b) \notin B \Rightarrow (a,b) \notin \bigcap\mathscr{L}$. \\ \\
+Sea $(a,b) \notin B$, se cumple que $a \ne 0$ o $|b| > 1$. \\
+Caso 1) Si $a = 0$, entonces $|b| > 1$, pero esto quiere decir que $(a,b) \in A$ (el conjunto que definimos en la demostración anterior). Pero en esa demostración vimos que si $(a,b) \in A$ entonces $(a,b) \notin L_m$ para todo $m \in \mathbb{R}$. Entonces obviamente $(a,b) \notin \bigcap\mathscr{L}$. \\\\
+Caso 2) $a \ne 0$. Veamos que si tomamos $m = \frac{b+2}{a} \in \mathbb{R}$, entonces $(a,b) \notin L_m$. Para eso supongamos que $(a,b) \in L_\frac{b+2}{a}$. Entonces \\ $(\frac{b+2}{a})a - 1 \le b \le (\frac{b+2}{a})a + 1$ \\ $\Rightarrow b + 1 \le b \le b+3$ \\ $\Rightarrow 1 \le 0 \le 3$ \\ $\Rightarrow 1 \le 0$, ¡absurdo! \\\\
+Entonces $(a,b) \notin L_\frac{b+2}{a}$, y por lo tanto $(a,b) \notin \bigcap\mathscr{L}$. \\ \\
+Resumiendo, vimos que $(a,b) \in B \Rightarrow (a,b) \in \bigcap\mathscr{L}$, y que $(a,b) \notin B \Rightarrow$ $\Rightarrow (a,b) \notin \bigcap\mathscr{L}$. \\ \\ Esto quiere decir en efecto que \fbox{$\bigcap\mathscr{L} = B$}
+\end{proof}
+
+
+
+\end{document}
+
+
+

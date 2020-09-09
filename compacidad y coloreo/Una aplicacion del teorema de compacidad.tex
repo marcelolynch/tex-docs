@@ -1,0 +1,106 @@
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+\newcommand{\N}{\mathbb{N}}
+
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+\newenvironment{theorem}[2][Teorema]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{definition}[2][Definición]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+\newenvironment{observacion}[2][Observación]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2}]}{\end{trivlist}}
+
+\newenvironment{dem}{\begin{proof}[Demostración]}{\end{proof}}
+ 
+\begin{document}
+
+\title{Una aplicación del teorema de compacidad}
+\author{ Marcelo Lynch \\ Lógica Computacional - ITBA }
+\date{2017}
+
+\maketitle
+
+\subsection*{Introducción}
+El Teorema de Compacidad es un resultado muy poderoso de la lógica proposicional. Teoremas análogos en lógicas de órdenes superiores han dado lugar a desarrollos teóricos muy interesantes en diversas áreas de la matemática. Los resultados de la lógica nos permiten afectar a muchos ``universos" de la matemática al mismo tiempo sin ni siquiera tenerlos en cuenta, pues el tejido de la lógica sostiene en definitiva el edificio argumentativo que es la matemática \footnote{Y lo hace temblar: referirse por ejemplo a los teoremas de incompletitud de Gödel.}.
+
+El teorema que se demuestra a continuación\footnote{Existen varias demostraciones del teorema que exhibimos, y no todas usan compacidad. La que se exhibe aquí sigue de cerca la mostrada en \url{http://kaharris.org/teaching/481/lectures/lec18.pdf}} resulta, una vez expuesto, completamente natural (de hecho, la mayoría del formalismo es manejo de símbolos, pero la idea central es muy fácil de transmitir) y al mismo tiempo sorprendente en su desarrollo. Es interesante sobre todo porque, además de ser una aplicación por fuera de la lógica de un teorema puramente lógico, nos da una idea del poder expresivo de la lógica proposicional.\\
+
+Enunciemos, para comenzar, el susodicho
+
+\begin{theorem}{(de Compacidad).}
+Sea $\Gamma \subset \mathcal{F}$. $\Gamma$ es satisfacible si y solo si es finitamente satisfacible, esto es, todo subconjunto finito de $\Gamma$ es satisfacible.
+\end{theorem}
+
+
+\subsection*{Una aplicación interesante}
+
+A continuación vamos a demostrar un resultado sobre grafos infinitos. Para eso precisemos las definiciones).
+
+\begin{definition}{(Grafo)} Un grafo $G$ es un par ordenado $(V, E)$, donde $V \neq \emptyset$ es el conjunto de \textit{vértices} de $G$ y $E \subset V \times V$ es el conjunto de \textit{aristas} de $G$. Además pedimos que el conjunto $V$ sea numerable. Si $V$ además es finito decimos que $G$ es un \textbf{grafo finito}, de lo contrario decimos que es \textit{infinito}.
+\end{definition}
+
+\begin{definition}{(Subgrafo)} Un grafo $G' = (V', E')$ es subgrafo de $G$ si $V' \subset V$ y $E' \subset E$. 
+\end{definition}
+
+\begin{definition}{(Adyacencia de vértices)} Sea $G = (V,E)$ grafo. Si $(u,v) \in E$ decimos que $u$ y $v$ son \textit{adyacentes} o \textit{vecinos} en $G$.
+\end{definition}
+
+
+\begin{definition}{(k-coloreo)} Un $k$-coloreo (con $k \in \mathbb{N}$) sobre un grafo $G = (V,E)$ es una función $f: V \rightarrow I_k$, donde $I_k = \{1, 2, \cdots , k\} $, que cumple $(u,v) \in E \Rightarrow f(u) \neq f(v)$. \\\\ Es decir, un $k$-coloreo es una asignación de $k$ ``colores" a los vértices del grafo con la propiedad de que dos vértices adyacentes no compartan color. \\\\ Si existe un $k$-coloreo sobre un grafo $G$ decimos que $G$ es $k$-coloreable. 
+\end{definition}
+
+Vamos a demostrar el siguiente teorema:
+\begin{theorem}{(de De Bruijn–Erdős)}
+Sea $G = (V,E)$ un grafo. Entonces $G$ es $k$-coloreable si y solo si todo subgrafo finito de $G$ es $k$-coloreable. 
+\end{theorem}
+
+El teorema no es difícil de creer, pero ¿como empezaríamos a demostrarlo? El lector puede detenerse en este punto para intentar de vislumbrar la dificultad de la situación y pensar cómo podría entrar el Teorema de Compacidad en todo esto (en principio uno ve el enunciado y nota que es ``parecido" al propio enunciado del Teorema de Compacidad, pero ¿cómo mezclamos grafos y valuaciones en la misma demostración?).
+\begin{dem}
+La ida es trivial, pues basta usar la misma asignación de colores para el subgrafo. Formalmente: si $G$ es $k$-coloreable, sea $f$ un $k$-coloreo sobre $G$. Sea $S = (V',E')$ subgrafo de $G$, definimos $g: V' \rightarrow I_k$, $g(v) = f(v)$.  $g$ es un $k$-coloreo sobre $S$: si no lo fuera, existiría $(u,v) \in E'$ tal que $g(u) = g(v)$, luego existe $(u,v) \in E$ tal que $f(u) = f(v)$, absurdo pues $f$ es un k-coloreo sobre $G$.
+\\ \\
+Para la vuelta es donde usamos el Teorema de Compacidad. Si $G$ es finito no hay nada que demostrar (pues el propio $G$ es subgrafo finito de sí mismo, por lo tanto $k$-coloreable por hipótesis). Supongamos entonces que $G$ no es finito, luego $V = \{v_0, v_1, v_2, v_3, \cdots \}$. \\ \\ Vamos a definir un conjunto de símbolos proposicionales $\{ P_{(i,j)} \}$, con $i\in\mathbb{N}$ y $j \in \{1, \cdots, k\}$, y vamos a ``leer" $P_{(i,j)}$ como ``el vértice $v_i$ tiene el color j". Sabemos que el conjunto $\N \times I_k$ es coordinable con $\N$, luego existe una biyección $\phi : \N \times I_k \rightarrow \N$. Entonces hay una correspondencia biunívoca entre $Var$ y $\{P_{(i,j)}\}$, pues identificar entonces a $P_{(i,j)}$ con una variable del lenguaje de la lógica proposicional, $p_{\phi(i,j)}$. Es decir, cada vez que escribamos $P_{(i,j)}$ de ahora en más, podemos pensar que en realidad estamos escribiendo de otra forma (por comodidad de lectura e interpretación) una variable de $Var$.
+\\ \\ Pero ¿para qué hacemos todo esto? La idea va a ser usar los $P_{(i,j)}$, en definitiva las variables de la lógica proposicional, y alguna valuación (ya veremos cuál), como una especie \textit{hoja de ruta} para construir un $k$-coloreo sobre $G$. Si la valuación vale 1 en $P_{(i,j)}$ entonces el coloreo será del color $j$ en el vértice $v_i$. Pero todavía falta imponer restricciones para que esta hoja de ruta ``funcione".
+\\ \\
+\\ \\ Definamos entonces algunos conjuntos de fórmulas sobre estas proposiciones:
+\begin{align*}
+&A_r = \{\ \bigvee_{i=1}^{k}P_{(r,i)} \},\ r \in \N\\ \\
+&B_r = \{\ \neg(P_{(r,i)}\land P_{(r,j)}) \tab \forall i,j \in \{1, \cdots, k\},\  i \neq j \} ,\ r \in \N\\ \\
+&C = \{\ \neg(P_{(r,i)} \land P_{(s,i)}) \tab \forall (v_r,v_s) \in E,\ \ \forall i \in \{1, \cdots, k\} \} \end{align*}
+Veamos un poco, sin formalismo y para hacernos una idea de la idea, en qué nos van a ayudar estos conjuntos de fórmulas: \\ \\ Los conjuntos $A_r$ tienen una sola fórmula, que básicamente podemos interpretar como ``el vértice $v_r$ tiene algún color (el color 1, o el color 2, o ..., o el color k)". \\ \\ Los conjuntos $B_r$ nos van a exigir que el vértice $v_r$ tenga un solo color y no dos al mismo tiempo (por eso incluye fórmulas con todos los $i,j$ con $i \neq j$). \\ \\ Finalmente, $C$ tiene las fórmulas que impondrán la condición del coloreo: si existe la arista $(v_r, v_s)$ en el grafo entonces ``no puedo" colorear $v_r$ con $i$ y $v_s$ también con $i$ (para cualquier color $i$).
+\\ \\
+Finalmente unamos todo y hagamos $\Gamma = \bigcup^\infty_{r=0}A_r \cup \bigcup^\infty_{r=0}B_r \cup C$. Afirmamos que \textbf{si el conjunto $\Gamma$ es satisfacible, entonces existe un $k$-coloreo para $G$}. Demostrémoslo. \\ \\ Si $\Gamma$ es satisfacible, sea $w$ una valuación que lo satisface. Definimos una función $f:V\rightarrow I_k$, con $f(v_r) = k \Leftrightarrow w(P_{(r,k)}) = 1$. Queremos ver dos cosas: primero, que $f$ está bien definida. Segundo, que $f$ es en efecto un $k$-coloreo sobre $G$. \\ \\$f$ está bien definida: dado $v_n$, existe $j$ tal que $w(P_{(n,j)}) = 1$, pues de lo contrario (si vale 0 para todo $j \in I_k$) $w$ no satisfaría a $\bigvee_{i=1}^{k}P_{(n,i)} \in A_n \subset \Gamma$ (lo cual es absurdo, pues sabemos que $w$ satisface $\Gamma$). Además, no existen $i, j$ con $i \neq j$ tales que $w(P_{(n,i)}) = 1$ y también $w(P_{(n,j)}) = 1$, pues así sería $w(\neg(P_{(n,i)} \land P_{(n,j)})) = 0$, lo cual no puede ser pues $\neg(P_{(n,i)} \land P_{(n,j)}) \in B_r \subset \Gamma$ (y $w$ satisface $\Gamma$). Vimos que existe una única imagen para todo elemento del dominio: luego $f$ está bien definida. \\ \\
+Además $f$ es un $k$ coloreo: supongamos que no, luego existe $(v_x,v_y) \in E$ con $f(v_x) = f(v_y) = j$ Pero entonces $w(P_{(x,j)}) = w(P_{(y,j)}) = 1$, pero entonces $w(\neg(P_{(x,j)} \land P_{(s,j)})) = 0$, absurdo pues $\neg(P_{(x,j)} \land P_{(s,j)}) \in C \subset \Gamma$, y $w$ satisface $\Gamma$. 
+\\ \\
+Ahora que estamos convencidos (esperemos) de que si $\Gamma$ es satisfacible entonces $G$ es $k$-coloreable, tenemos que probar que $\Gamma$ es satisfacible, y finalmente nos toca usar el Teorema de Compacidad. Tomemos un subconjunto finito cualquiera de $\Gamma$, llamémoslo $\Sigma$. Sea el grafo $S = (E', V')$, con:
+\begin{align*}
+&E' = \{ (v_r, v_s) \in E : \neg(P_{(r,i)} \land P_{(s,i)}) \in \Sigma \} \text{, y}\\
+&V' = \{ v : (v, x) \in E' \text{ o } (x, v)\in E' \text{ para algún $x \in V$ } \} \cup \{ v_i : A_i \subset \Sigma \}
+\end{align*}
+\\
+La idea fue agarrar todas las aristas y vértices que ``encontramos" en $\Sigma$. Es claro que $S$ es un subgrafo finito de $G$: no puede ser infinito pues las fórmulas de $\Sigma$ son finitas, luego estamos tomando finitas aristas y finitos vértices de $G$. Entonces, \textbf{por hipótesis, $S$ es $k$-coloreable}. Luego existe $h$, un $k$-coloreo sobre $S$. Definimos:
+\begin{align*}
+&g : Var \rightarrow \{0,1 \} \\
+&g(P_{(i,j)}) = \begin{cases} 
+      1 & v_i \in V' \text{ y } h(v_i) = j \\
+      0 & \text{si no}
+      \end{cases}
+\end{align*}
+Sea $w_g$ la valuación que extiende a $g$. Veamos que $w_g$ satisface $\Sigma$. Supongamos que no, luego existe $\alpha \in \Sigma$ tal que $w_g(\alpha) = 0$. Hay tres casos, según si $\alpha$ salió de algún $A_r, B_r$ o de $C$:
+\\ \\ 1. $\alpha$ es de la forma $\bigvee_{i=1}^{k}P_{(r,i)}$. Pero entonces $v_r \in V'$ (porque $A_r \subset \Sigma$), y como $h(v_r) = j$ con $j \in \{1, \cdots, k\}$ por ser $h$ un $k$-coloreo sobre S, luego $w_g(P_{(r,j)}) = 1$, luego $w_g(\alpha) = 1$, absurdo.
+\\ \\2. $\alpha$ es de la forma $\neg(P_{(r,i)}\land P_{(r,j)})$, con $i \neq j$ Pero si $w_g(\alpha) = 0$ entonces $w_g(P_{(r,i)}) = w_g(P_{(r,j)}) = 1$, pero eso quiere decir que $h(v_r) = i$ y $h(v_r) = j$ (con $i \neq j$, que es absurdo pues $h$ es una función.
+\\ \\3. $\alpha$ es de la forma $\neg(P_{(r,i)} \land P_{(s,i)})$, con $(v_r, v_s) \in E'$. Pero en este caso si $w_g(\alpha) = 0$ entonces $w_g(P_{(j,i)}) = w_g(P_{(s,i)}) = 1$, entonces $h(v_r) = h(v_s) = i$, con $v_r$ y $v_s$ vecinos en $S$. Pero esto es absurdo pues $h$ es un $k$-coloreo, no puede haber dos vecinos del mismo color.
+\\ \\ El absurdo sale de suponer que $w_g$ no satisface $\Sigma$, luego queda demostrado que $w_g$ satisface a $\Sigma$, es decir $\Sigma$ es satisfacible.
+\\ \\ Probamos así que todo subconjunto finito de $\Gamma$ es satisfacible. Por lo tanto, $\Gamma$ es finitamente satisfacible. Por el Teorema de Compacidad, $\Gamma$ es satisfacible. Finalmente, como ya vimos, si $\Gamma$ es satisfacible entonces el grafo $G$ es $k$-coloreable. ¡Queda demostrado!
+\end{dem}
+ 
+\begin{observacion}{} El teorema que acabamos de demostrar nos deja extender el teorema de los cuatro colores sobre coloreo de mapas (famoso por su controvertida demostración asistida por computadora) a regiones infinitas.
+\end{observacion}
+
+
+\end{document}
